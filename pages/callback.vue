@@ -9,10 +9,11 @@ import { useUser } from '@/stores/user'
 
 const route = useRoute();
 const router = useRouter();
+const store = useUser()
+
 
 
 const exchangeAuthorizationCodeForToken = async (code: string) => {
-    const store = useUser()
     const clientSecret = store.user.settings.clientSecret
     const clientId = store.user.settings.clientId
     const redirectUri = store.user.settings.redirectUri
@@ -50,10 +51,11 @@ onMounted(async () => {
 
     try {
         const response = await exchangeAuthorizationCodeForToken(code);
+        store.user.accessToken = response;
         router.push('/dashboard')
     } catch (error) {
         console.error(error);
-        router.push('/error')
+        router.push('/')
     }
 })
 </script>

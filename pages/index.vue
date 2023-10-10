@@ -2,6 +2,11 @@
 import { useUser } from '@/stores/user'
 
 const store = useUser()
+const router = useRouter()
+const settings = !Object.values(store.user.settings).some(value => !value);
+if(settings){
+    store.user.accessToken ? router.push('/dashboard') : router.push('/')
+}
 
 const authorizeSpotify = async () => {
     const clientId = store.user.settings.clientId;

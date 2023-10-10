@@ -7,4 +7,5 @@ export type UserSettings = {
 
 export type User = {
     settings: UserSettings
+    accessToken?: string;
 }
