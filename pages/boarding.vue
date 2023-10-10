@@ -4,9 +4,9 @@ import { useUser } from '@/stores/user'
 
 const store = useUser()
 const userSettings = ref<UserSettings>({
-    clientId: '',
-    clientSecret: '',
-    redirectUri: '',
+    clientId: store.user.settings.clientId,
+    clientSecret: store.user.settings.clientSecret,
+    redirectUri: store.user.settings.redirectUri,
 })
 
 function saveUserSettings() {
