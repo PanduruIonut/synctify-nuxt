@@ -10,6 +10,9 @@ dependencies:
   pinia:
     specifier: ^2.1.6
     version: 2.1.6(vue@3.3.4)
+  vue3-toastify:
+    specifier: ^0.1.13
+    version: 0.1.13(vue@3.3.4)
 
 devDependencies:
   '@nuxt/devtools':
@@ -6260,6 +6263,18 @@ packages:
       '@vue/devtools-api': 6.5.0
       vue: 3.3.4
     dev: true
+
+  /vue3-toastify@0.1.13(vue@3.3.4):
+    resolution: {integrity: sha512-ukz5hea0z+cplvcujr8htgopTwFwHPFKAGUK/ugCOIFxmxevagUimqb2p1AUA8D/T6G/ckrn98sW5WAsui8ofg==}
+    engines: {node: '>=16', npm: '>=7'}
+    peerDependencies:
+      vue: '>=3.2.0'
+    peerDependenciesMeta:
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.3.4
+    dev: false
 
   /vue@3.3.4:
     resolution: {integrity: sha512-VTyEYn3yvIeY1Py0WaYGZsXnz3y5UnGi62GjVEqvEGPl6nxbOrCXbVOTQWBEJUqAyTUk2uJ5JLVnYJ6ZzGbrSw==}
