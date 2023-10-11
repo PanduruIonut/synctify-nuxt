@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
+import  Songs  from '~/components/Songs.vue'
 const store = useUser();
 
 const syncPlaylist = () => {
@@ -47,5 +48,6 @@ const sync = () => {
   <div>
     <h1>Welcome to your profile!</h1>
     <v-btn @click="sync">Sync your liked songs </v-btn>
+    <Songs/>
   </div>
 </template>
