@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
-import  Songs  from '~/components/Songs.vue'
+import  Songs  from "@/components/songs.vue"
 const store = useUser();
 
 const syncPlaylist = () => {
