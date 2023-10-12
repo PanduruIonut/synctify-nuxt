@@ -2,32 +2,28 @@
 import { ref } from "vue";
 import Song from "@/components/song.vue";
 import { PlayStates } from "@/types/playStates";
-import SongType from "@/components/songs.vue" 
+import SongType from "@/components/songs.vue"
 
-defineProps<{ songs: Array< typeof SongType>}>();
+defineProps<{ songs: Array<typeof SongType> }>();
 
-let isPlaying = ref(false);
 
 const audioPlayer = ref<HTMLElement | null>(null);
-const playStates = ref<PlayStates>({});
-const showPlayButtonForSong = ref<string | null>(null);
+const currentSong = ref(null);
 
-const togglePlay = (audioUrl: string, song: typeof Song): void => {
-  audioPlayer.value = document.getElementById("player");
 
+const togglePlay = (audioUrl: string, song: typeof SongType) => {
   if (audioPlayer.value) {
-    if (!isPlaying.value) {
-      (audioPlayer.value as HTMLAudioElement).src = audioUrl;
-      (audioPlayer.value as HTMLAudioElement).play();
-      playStates.value[song.id] = true;
-      showPlayButtonForSong.value = song.id;
+    if (currentSong.value === song.id) {
+      if ('paused' in audioPlayer.value && audioPlayer.value.paused) {
+        audioPlayer.value.play();
+      } else {
+        audioPlayer.value.pause();
+      }
     } else {
-      (audioPlayer.value as HTMLAudioElement).pause();
-
-      playStates.value[song.id] = false;
-      showPlayButtonForSong.value = null;
+      audioPlayer.value.src = audioUrl;
+      audioPlayer.value.play();
+      currentSong.value = song.id;
     }
-    isPlaying.value = !isPlaying.value;
   }
 };
 
@@ -54,43 +50,64 @@ const formatTimestamp = (addedAt: string) => {
     return `${minutesAgo} minute${minutesAgo > 1 ? "s" : ""} ago`;
   }
 };
+
+const headers = [
+  {
+    title: '#',
+    align: 'start',
+    sortable: true,
+    key: 'id',
+  },
+  { title: 'Title', key: 'title', align: 'start' },
+  { title: 'Artist', key: 'artist', align: 'start' },
+  { title: 'Album', key: 'album', align: 'start' },
+  { title: 'Date Added', key: 'added_at', align: 'start' },
+]
+
+const loading = ref(false);
+
+
+const hoveredRow = ref(null);
+const selectedRow = ref(null);
+
+const handleRowClick = (item: typeof Song) => {
+  togglePlay(item.preview_url, item);
+  if (selectedRow.value === item.id) {
+    selectedRow.value = null;
+  } else {
+    if (selectedRow !== null) {
+      selectedRow.value = null;
+    }
+    selectedRow.value = item.id;
+  }
+}
+
 </script>
 <template>
-  <div v-if="songs">
-    <v-table fixed-header class="songs">
-      <thead>
-        <tr>
-          <th class="text-left">#</th>
-          <th class="text-left">Title</th>
-          <th class="text-left">Album</th>
-          <th class="text-left">Date added</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="song in songs.slice(0, 100)" :key="song.title" @mouseenter="showPlayButtonForSong = song.id"
-          @mouseleave="showPlayButtonForSong = null" @click="togglePlay(song.preview_url, song)">
+    <v-data-table-server :headers="headers" :items-length="songs.length" :items="songs" :loading="loading"
+      class="elevation-1" item-value="id">
+      <template v-slot:item="{ item }">
+        <tr @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null" @click="handleRowClick(item)"
+          :class="{ 'selected-row': selectedRow === item.id }">
+          <td v-html="selectedRow === item.id ? '⏸' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
           <td>
-            <span v-if="showPlayButtonForSong === song.id">
-              <button v-if="!playStates[song.id]">▶︎</button>
-              <button v-else>⏸︎</button>
-            </span>
-            <span v-else>{{ song.id }}</span>
+            <Song :song="item" />
           </td>
-          <td>
-            <Song :song="song" />
-          </td>
-          <td>{{ song.album }}</td>
-          <td>{{ formatTimestamp(song.added_at) }}</td>
+          <td>{{ item.artist }}</td>
+          <td>{{ item.album }}</td>
+          <td>{{ formatTimestamp(item.added_at) }}</td>
         </tr>
-      </tbody>
-    </v-table>
+      </template>
+    </v-data-table-server>
     <audio controls id="player"></audio>
-  </div>
-  <div v-else>Loading...</div>
 </template>
 
-<style lang="scss">
-#player{
+<style lang="scss" scoped>
+#player {
   display: none
+}
+
+.custom-button {
+  display: none;
 }
 </style>
