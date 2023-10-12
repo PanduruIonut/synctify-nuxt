@@ -2,8 +2,10 @@
 import { ref } from "vue";
 import Song from "@/components/song.vue";
 import { PlayStates } from "@/types/playStates";
+import SongType from "@/components/songs.vue" 
 
-let songs = ref();
+defineProps<{ songs: Array< typeof SongType>}>();
+
 let isPlaying = ref(false);
 
 const audioPlayer = ref<HTMLElement | null>(null);
@@ -32,22 +34,6 @@ const togglePlay = (audioUrl: string, song: typeof Song): void => {
 onMounted(async () => {
   audioPlayer.value = document.getElementById("player");
 
-  const response = await fetch(
-    `http://localhost:8000/user/liked_songs/${"11wtf2500ct465duqzc7kgxcq"}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-
-  if (!response.ok) {
-    new Error(`Failed to create playlist. Status: ${response.status}`);
-    return;
-  }
-
-  songs.value = await response.json();
 });
 const formatTimestamp = (addedAt: string) => {
   const currentDate = new Date();
@@ -104,7 +90,7 @@ const formatTimestamp = (addedAt: string) => {
 </template>
 
 <style lang="scss">
-player{
+#player{
   display: none
 }
 </style>

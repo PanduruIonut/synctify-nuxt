@@ -25,5 +25,5 @@ export default defineNuxtConfig({
       ['defineStore', 'definePiniaStore'],
     ],
   },
-  ssr: false,
+  ssr: true,
 })

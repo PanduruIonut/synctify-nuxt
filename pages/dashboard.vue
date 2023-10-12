@@ -1,7 +1,19 @@
+<template>
+  <div>
+    <h1>Welcome to your profile!</h1>
+    <v-btn @click="sync">Sync your liked songs </v-btn>
+    <Songs :songs="songs" />
+  </div>
+</template>
+
 <script setup lang="ts">
+import { ref } from 'vue';
+import Songs from '@/components/songs.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
-import  Songs  from "@/components/songs.vue"
+
+const songs = ref([]);
+
 const store = useUser();
 
 const syncPlaylist = () => {
@@ -43,11 +55,25 @@ const sync = () => {
     }
   );
 };
+async function fetchSongs() {
+  try {
+    const response = await fetch('http://localhost:8000/user/liked_songs/11wtf2500ct465duqzc7kgxcq', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch liked songs. Status: ${response.status}`);
+    }
+
+    songs.value = await response.json();
+    console.log(songs)
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+onMounted(fetchSongs);
 </script>
-<template>
-  <div>
-    <h1>Welcome to your profile!</h1>
-    <v-btn @click="sync">Sync your liked songs </v-btn>
-    <Songs/>
-  </div>
-</template>
