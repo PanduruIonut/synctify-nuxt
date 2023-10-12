@@ -25,6 +25,7 @@ const modifiedSong = ref({
   &__image {
     max-width: 40px;
     max-height: 40px;
+    border-radius:5px;
   }
   &__info {
     display: flex;
