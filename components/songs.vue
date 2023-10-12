@@ -102,4 +102,9 @@ const formatTimestamp = (addedAt: string) => {
   </div>
   <div v-else>Loading...</div>
 </template>
-<style lang="scss"></style>
+
+<style lang="scss">
+player{
+  display: none
+}
+</style>
