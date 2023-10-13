@@ -1,11 +1,11 @@
 <template>
   <v-container class="container">
     <v-row>
-      <v-col cols="4">
+      <v-col cols="2">
         <UserStats :last-sync="lastSync"/>
         <v-btn @click="sync">Sync</v-btn>
     </v-col>
-    <v-col cols="8">
+    <v-col cols="10">
       <div>
       <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
         :items-per-page="itemsPerPage" />

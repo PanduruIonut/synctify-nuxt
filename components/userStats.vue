@@ -45,7 +45,8 @@ async function getUser(){
     return response.json();
   })
   .then((data) => {
-      store.saveUser({id:data.id})
+      user.value = data;
+      store.saveUser(data)
   })
   .catch((error) => {
     console.error(error);
