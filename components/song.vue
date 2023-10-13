@@ -30,8 +30,10 @@ function getModifiedSong(song: Song) {
 .song {
   display: flex;
   &__image {
-    max-width: 40px;
-    max-height: 40px;
+    margin-top:5px;
+    margin-bottom:5px;
+    max-width: 60px;
+    max-height: 60px;
     border-radius:5px;
   }
   &__info {
