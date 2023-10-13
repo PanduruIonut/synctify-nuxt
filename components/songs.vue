@@ -111,12 +111,8 @@ watch(itemsPerPage, (newValue, oldValue) => {
   <audio controls id="player"></audio>
 </template>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #player {
   display: none
-}
-
-.custom-button {
-  display: none;
 }
 </style>

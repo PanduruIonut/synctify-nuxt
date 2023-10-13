@@ -1,20 +1,29 @@
 <template>
-  <div class="container-fullwidth">
-    <h1>Welcome to your profile!</h1>
-    <v-btn @click="sync">Sync your liked songs</v-btn>
+  <v-container class="container">
+    <v-row>
+      <v-col cols="2">
+        <UserStats />
+        <v-btn @click="sync">Sync</v-btn>
+    </v-col>
+    <v-col cols="10">
+      <div>
       <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
         :items-per-page="itemsPerPage" />
-    <div>
-      <v-btn @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
-      <span>{{ currentPage }}</span>
-      <v-btn @click="nextPage" :disabled="currentPage === totalPages">Next</v-btn>
-    </div>
-  </div>
+      <div class="pagination">
+        <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
+        <span class="current-page">{{ currentPage }}</span>
+        <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
+        </div>
+      </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import Songs from '@/components/songs.vue';
+// import userStats from '@/components/userStats.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
 
@@ -117,12 +126,12 @@ watch(songs, () => {
 
 onMounted(fetchSongs);
 </script>
-<style scoped>
-.container-fullwidth {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+<style>
+.container{
+  margin-left:5px;
+}
+.pagination{
+  margin-top:5px;
+  text-align: center;
 }
 </style>

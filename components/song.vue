@@ -11,9 +11,6 @@ onUpdated(() => {
 });
 function getModifiedSong(song: Song) {
   const modified = { ...song };
-  modified.images = JSON.parse(song.images).map((url: string) =>
-    url.replace(/^"|"$/g, "")
-  );
   return modified;
 }
 </script>
