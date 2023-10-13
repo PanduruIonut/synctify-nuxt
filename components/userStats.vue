@@ -22,7 +22,6 @@ async function getMostListenedSongs() {
     return response.json();
   })
   .then((data) => {
-    console.log(data);
     songs.value = data.items;
   })
   .catch((error) => {
@@ -45,8 +44,7 @@ async function getUser(){
     return response.json();
   })
   .then((data) => {
-      console.log(data);
-      user.value = data;
+      store.saveUser({id:data.id})
   })
   .catch((error) => {
     console.error(error);

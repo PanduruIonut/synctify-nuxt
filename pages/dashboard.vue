@@ -1,11 +1,11 @@
 <template>
   <v-container class="container">
     <v-row>
-      <v-col cols="2">
+      <v-col cols="4">
         <UserStats :last-sync="lastSync"/>
         <v-btn @click="sync">Sync</v-btn>
     </v-col>
-    <v-col cols="10">
+    <v-col cols="8">
       <div>
       <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
         :items-per-page="itemsPerPage" />
@@ -37,7 +37,7 @@ const lastSync = ref()
 
 async function fetchSongs() {
   try {
-    const response = await fetch(`http://localhost:8000/user/liked_songs/11wtf2500ct465duqzc7kgxcq`, {
+    const response = await fetch(`http://localhost:8000/user/liked_songs/${store.user.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

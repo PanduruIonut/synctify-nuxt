@@ -10,7 +10,8 @@ export const useUser = defineStore('storeId', {
                     clientId: '',
                     clientSecret: '',
                     redirectUri: ''
-                }
+                },
+                id: ''
             }
         }
     },
@@ -18,6 +19,9 @@ export const useUser = defineStore('storeId', {
     actions: {
         saveSettings(settings: Partial<UserSettings>) {
             return Object.assign(this.user.settings, settings);
+        },
+        saveUser(user: Partial<User>) {
+            return Object.assign(this.user, user);
         }
     },
 
