@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Song from "@/components/song.vue";
-import { PlayStates } from "@/types/playStates";
 import SongType from "@/components/songs.vue"
 
-defineProps<{ songs: Array<typeof SongType> }>();
+defineProps<{ songs: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
 
 
 const audioPlayer = ref<HTMLElement | null>(null);
 const currentSong = ref(null);
+const itemsPerPage = ref(10);
+const emit = defineEmits(["setItemsPerPage"])
 
 
 const togglePlay = (audioUrl: string, song: typeof SongType) => {
@@ -81,25 +82,33 @@ const handleRowClick = (item: typeof Song) => {
     selectedRow.value = item.id;
   }
 }
+const handleItemsPerPageChanged = (newValue: number) => {
+  emit('setItemsPerPage', newValue);
+}
+
+watch(itemsPerPage, (newValue, oldValue) => {
+  console.log({ newValue })
+  handleItemsPerPageChanged(newValue);
+});
 
 </script>
 <template>
-    <v-data-table-server :headers="headers" :items-length="songs.length" :items="songs" :loading="loading"
-      class="elevation-1" item-value="id">
-      <template v-slot:item="{ item }">
-        <tr @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null" @click="handleRowClick(item)"
-          :class="{ 'selected-row': selectedRow === item.id }">
-          <td v-html="selectedRow === item.id ? '⏸' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
-          <td>
-            <Song :song="item" />
-          </td>
-          <td>{{ item.artist }}</td>
-          <td>{{ item.album }}</td>
-          <td>{{ formatTimestamp(item.added_at) }}</td>
-        </tr>
-      </template>
-    </v-data-table-server>
-    <audio controls id="player"></audio>
+  <v-data-table-server :headers="headers" :items-length="totalSongs" :items="songs" :loading="loading"
+    v-model:items-per-page="itemsPerPage" class="elevation-1" item-value="id">
+    <template v-slot:item="{ item }">
+      <tr @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null" @click="handleRowClick(item)"
+        :class="{ 'selected-row': selectedRow === item.id }">
+        <td v-html="selectedRow === item.id ? '⏸' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
+        <td>
+          <Song :song="item" />
+        </td>
+        <td>{{ item.artist }}</td>
+        <td>{{ item.album }}</td>
+        <td>{{ formatTimestamp(item.added_at) }}</td>
+      </tr>
+    </template>
+  </v-data-table-server>
+  <audio controls id="player"></audio>
 </template>
 
 <style lang="scss" scoped>

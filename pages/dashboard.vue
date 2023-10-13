@@ -1,8 +1,9 @@
 <template>
-  <div>
+  <div class="container-fullwidth">
     <h1>Welcome to your profile!</h1>
     <v-btn @click="sync">Sync your liked songs</v-btn>
-    <Songs :songs="displayedSongs" />
+      <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
+        :items-per-page="itemsPerPage" />
     <div>
       <v-btn @click="previousPage" :disabled="currentPage === 1">Previous</v-btn>
       <span>{{ currentPage }}</span>
@@ -20,7 +21,7 @@ import { toast } from "vue3-toastify";
 const songs = ref([]);
 const displayedSongs = ref([]);
 const store = useUser();
-const itemsPerPage = 10;
+const itemsPerPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(1);
 
@@ -86,8 +87,8 @@ const sync = () => {
 };
 
 function updateDisplayedSongs() {
-  const startIndex = (currentPage.value - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
+  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
+  const endIndex = startIndex + itemsPerPage.value;
   displayedSongs.value = songs.value.slice(startIndex, endIndex);
 }
 
@@ -105,9 +106,23 @@ function nextPage() {
   }
 }
 
+const handleItemsPerPageChange = (newItemsPerPage: number) => {
+  itemsPerPage.value = newItemsPerPage;
+  updateDisplayedSongs();
+};
+
 watch(songs, () => {
-  totalPages.value = Math.ceil(songs.value.length / itemsPerPage);
+  totalPages.value = Math.ceil(songs.value.length / itemsPerPage.value);
 });
 
 onMounted(fetchSongs);
 </script>
+<style scoped>
+.container-fullwidth {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  text-align: center;
+}</style>
