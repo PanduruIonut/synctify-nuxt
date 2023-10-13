@@ -25,6 +25,8 @@ import { ref } from 'vue';
 import Songs from '@/components/songs.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
+import handleFetch from '@/services/api';
+
 
 const songs = ref([]);
 const displayedSongs = ref([]);
@@ -37,7 +39,7 @@ const lastSync = ref()
 
 async function fetchSongs() {
   try {
-    const response = await fetch(`http://localhost:8000/user/liked_songs/${store.user.id}`, {
+    const response = await handleFetch(`http://localhost:8000/user/liked_songs/${store.user.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -59,7 +61,7 @@ async function fetchSongs() {
 const syncPlaylist = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("http://localhost:8000/create_playlist", {
+      const response = await handleFetch("http://localhost:8000/create_playlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

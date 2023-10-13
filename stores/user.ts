@@ -11,7 +11,10 @@ export const useUser = defineStore('storeId', {
                     clientSecret: '',
                     redirectUri: ''
                 },
-                id: ''
+                id: '',
+                accessToken: '',
+                refreshToken: '',
+                tokenExpiry: '',
             }
         }
     },
@@ -28,6 +31,9 @@ export const useUser = defineStore('storeId', {
     getters: {
         getSettings(): UserSettings {
             return this.user.settings
+        },
+        getRefreshToken():string | undefined {
+            return this.user.refreshToken
         }
     }
 })

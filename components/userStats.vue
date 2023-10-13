@@ -2,6 +2,7 @@
 import { useUser } from '@/stores/user'
 import Song from '@/components/song.vue'
 import {Song as SongType} from '@/types/song'
+import handleFetch from '@/services/api';
 
 defineProps<{ lastSync: string }>();
 const store = useUser()
@@ -9,7 +10,7 @@ const songs = ref()
 const user = ref()
 
 async function getMostListenedSongs() {
-    fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
+    handleFetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${store.user.accessToken}`
@@ -30,7 +31,7 @@ async function getMostListenedSongs() {
 }
 
 async function getUser(){
-    fetch('http://localhost:8000/me', {
+    handleFetch('http://localhost:8000/me', {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${store.user.accessToken}`

@@ -6,6 +6,8 @@
 
 <script setup lang="ts">
 import { useUser } from '@/stores/user'
+import handleFetch from '@/services/api';
+
 
 const route = useRoute();
 const router = useRouter();
@@ -24,7 +26,7 @@ const exchangeAuthorizationCodeForToken = async (code: string) => {
         code: code
     }
     try {
-        const response = await fetch('http://127.0.0.1:8000/callback', {
+        const response = await handleFetch('http://127.0.0.1:8000/callback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,7 +53,9 @@ onMounted(async () => {
 
     try {
         const response = await exchangeAuthorizationCodeForToken(code);
-        store.user.accessToken = response;
+        store.user.accessToken = response.access_token;
+        store.user.refreshToken = response.refresh_token;
+        store.user.tokenExpiry  = response.expires_in
         router.push('/dashboard')
     } catch (error) {
         console.error(error);
