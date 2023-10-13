@@ -3,9 +3,11 @@ import { useUser } from '@/stores/user'
 import Song from '@/components/song.vue'
 import {Song as SongType} from '@/types/song'
 
+defineProps<{ lastSync: string }>();
 const store = useUser()
 const songs = ref()
 const user = ref()
+
 async function getMostListenedSongs() {
     fetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
         method: "GET",
@@ -76,6 +78,7 @@ onMounted(()=>{
         </div>
         <h2 class="header__top-tracks">Top tracks this month</h2>
         <Song v-for="song in songs" :song="trackToSong(song)" />
+        <h3 v-if="lastSync">Last sync: {{ lastSync }}</h3>
     </div>
 </template>
 <style lang="scss">

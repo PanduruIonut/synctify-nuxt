@@ -38,7 +38,7 @@ const formatTimestamp = (addedAt: string) => {
   const timeDifference: number =
     currentDate.getTime() - songAddedDate.getTime();
 
-  if (timeDifference >= 30 * 24 * 60 * 60 * 1000) {
+    if (timeDifference >= 30 * 24 * 60 * 60 * 1000) {
     return addedAt;
   } else if (timeDifference >= 7 * 24 * 60 * 60 * 1000) {
     const weeksAgo = Math.floor(timeDifference / (7 * 24 * 60 * 60 * 1000));
@@ -46,6 +46,9 @@ const formatTimestamp = (addedAt: string) => {
   } else if (timeDifference >= 24 * 60 * 60 * 1000) {
     const daysAgo = Math.floor(timeDifference / (24 * 60 * 60 * 1000));
     return `${daysAgo} day${daysAgo > 1 ? "s" : ""} ago`;
+  } else if (timeDifference >= 60 * 60 * 1000) {
+    const hoursAgo = Math.floor(timeDifference / (60 * 60 * 1000));
+    return `${hoursAgo} hour${hoursAgo > 1 ? "s" : ""} ago`;
   } else {
     const minutesAgo = Math.floor(timeDifference / (60 * 1000));
     return `${minutesAgo} minute${minutesAgo > 1 ? "s" : ""} ago`;

@@ -2,7 +2,7 @@
   <v-container class="container">
     <v-row>
       <v-col cols="2">
-        <UserStats />
+        <UserStats :last-sync="lastSync"/>
         <v-btn @click="sync">Sync</v-btn>
     </v-col>
     <v-col cols="10">
@@ -23,7 +23,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import Songs from '@/components/songs.vue';
-// import userStats from '@/components/userStats.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
 
@@ -33,6 +32,7 @@ const store = useUser();
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(1);
+const lastSync = ref()
 
 
 async function fetchSongs() {
@@ -48,8 +48,9 @@ async function fetchSongs() {
       throw new Error(`Failed to fetch liked songs. Status: ${response.status}`);
     }
 
-    const allSongs = await response.json();
-    songs.value = allSongs;
+    const res = await response.json();
+    songs.value = res.liked_songs
+    lastSync.value = res.last_synced
     updateDisplayedSongs();
   } catch (error) {
     console.error(error);
