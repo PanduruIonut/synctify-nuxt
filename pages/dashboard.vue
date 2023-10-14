@@ -3,7 +3,9 @@
     <v-row>
       <v-col cols="3">
         <UserStats :last-sync="lastSync" />
-        <v-btn @click="sync">Sync</v-btn>
+        <div class="sync-settings">
+          <v-btn @click="sync">Sync</v-btn>
+        </div>
       </v-col>
       <v-col cols="9">
         <div class="songs">
@@ -170,4 +172,11 @@ body {
 
 .v-btn__overlay {
   background-color: transparent !important;
-}</style>
+}
+.sync-settings{
+  border-radius:10px;
+  margin-top:17px;
+  background-color: #212121;
+  box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
+}
+</style>

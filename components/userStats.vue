@@ -101,6 +101,9 @@ onMounted(()=>{
   padding-right:25px;
   border-radius:10px;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
+  // background:linear-gradient(to bottom, rgba(0,0,0,0) 30%, #212121);
+  background:linear-gradient(to bottom, #212121 5%, rgba(0,0,0,0));
+  
   
   .header{
     display:flex;

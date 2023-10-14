@@ -123,6 +123,8 @@ watch(itemsPerPage, (newValue, oldValue) => {
   background-color: #212121;
   border-radius: 10px;
   box-shadow: -2px 10px 22px 3px rgba(0, 0, 0, 0.75);
+  background:linear-gradient(to bottom, #212121 5%, rgba(0,0,0,0));
+
 }
 
 tbody {
