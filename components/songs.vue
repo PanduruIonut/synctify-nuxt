@@ -38,7 +38,7 @@ const formatTimestamp = (addedAt: string) => {
   const timeDifference: number =
     currentDate.getTime() - songAddedDate.getTime();
 
-    if (timeDifference >= 30 * 24 * 60 * 60 * 1000) {
+  if (timeDifference >= 30 * 24 * 60 * 60 * 1000) {
     return addedAt;
   } else if (timeDifference >= 7 * 24 * 60 * 60 * 1000) {
     const weeksAgo = Math.floor(timeDifference / (7 * 24 * 60 * 60 * 1000));
@@ -96,11 +96,11 @@ watch(itemsPerPage, (newValue, oldValue) => {
 
 </script>
 <template>
-  <v-data-table-server :headers="headers" :items-length="totalSongs" :items="songs" :loading="loading"
-    v-model:items-per-page="itemsPerPage" class="elevation-1" item-value="id">
+  <v-data-table-server class="table" :headers="headers" :items-length="totalSongs" :items="songs" :loading="loading"
+    v-model:items-per-page="itemsPerPage" item-value="id">
     <template v-slot:item="{ item }">
-      <tr @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null" @click="handleRowClick(item)"
-        :class="{ 'selected-row': selectedRow === item.id }">
+      <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
+        @click="handleRowClick(item)" :class="{ 'selected-row': selectedRow === item.id }">
         <td v-html="selectedRow === item.id ? '⏸' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
         <td>
           <Song :song="item" />
@@ -118,4 +118,17 @@ watch(itemsPerPage, (newValue, oldValue) => {
 #player {
   display: none
 }
-</style>
+
+.table {
+  background-color: #212121;
+  border-radius: 10px;
+  box-shadow: -2px 10px 22px 3px rgba(0, 0, 0, 0.75);
+}
+
+tbody {
+  tr:hover {
+    background: #404040;
+    transition: background 0.3s ease-in;
+    border-radius: 15px;
+  }
+}</style>

@@ -1,23 +1,23 @@
 <template>
-  <v-container class="container">
+  <div class="container-full-width">
     <v-row>
-      <v-col cols="2">
-        <UserStats :last-sync="lastSync"/>
+      <v-col cols="3">
+        <UserStats :last-sync="lastSync" />
         <v-btn @click="sync">Sync</v-btn>
-    </v-col>
-    <v-col cols="10">
-      <div>
-      <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
-        :items-per-page="itemsPerPage" />
-      <div class="pagination">
-        <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
-        <span class="current-page">{{ currentPage }}</span>
-        <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
+      </v-col>
+      <v-col cols="9">
+        <div class="songs">
+          <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
+            :items-per-page="itemsPerPage" />
         </div>
-      </div>
+        <div class="pagination">
+          <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
+          <span class="current-page">{{ currentPage }}</span>
+          <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
+        </div>
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -130,11 +130,44 @@ watch(songs, () => {
 onMounted(fetchSongs);
 </script>
 <style>
-.container{
-  margin-left:5px;
+body {
+  background-color: #121212;
+  color: white;
 }
-.pagination{
-  margin-top:5px;
+
+.container-full-width {
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 2%;
+}
+
+.pagination {
+  margin-top: 15px;
   text-align: center;
 }
-</style>
+
+.current-page{
+  margin-left:5px;
+  margin-right:5px;
+}
+
+.songs {
+  flex-direction: column;
+  display: flex;
+  max-height: 670px;
+  overflow: auto;
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px 1px rgba(0, 0, 0, 0.75);
+}
+
+.v-btn {
+  background-color: #212121 !important;
+}
+
+.v-btn:hover {
+  background-color: #404040 !important;
+}
+
+.v-btn__overlay {
+  background-color: transparent !important;
+}</style>

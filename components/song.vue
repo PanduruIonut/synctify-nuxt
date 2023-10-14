@@ -36,7 +36,8 @@ function getModifiedSong(song: Song) {
   &__info {
     display: flex;
     flex-direction: column;
-    margin-left: 5px;
+    margin-left: 15px;
+    justify-content: space-evenly;
     &-title {
       font-size: 15px;
       font-weight: 500;

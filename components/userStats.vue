@@ -71,14 +71,16 @@ onMounted(()=>{
 })
 </script>
 <template>
-    <div>
+    <div class="profile-container">
       <div class="header">
         <v-img class="img" v-if="user" :src="user.images[1].url"/>
-        <h1 v-if="user" class="header__user-name">{{ user.display_name  }}</h1>
-        </div>
-        <h2 class="header__top-tracks">Top tracks this month</h2>
+        <span v-if="user" class="user-name">{{ user.display_name  }}</span>
+      </div>
+      <span class="top-tracks-title">Top tracks this month</span>
+      <div class="top-tracks-songs">
         <Song v-for="song in songs" :song="trackToSong(song)" />
-        <h3 v-if="lastSync">Last sync: {{ lastSync }}</h3>
+      </div>
+        <span class="lastSync" v-if="lastSync">Last sync: {{ lastSync }}</span>
     </div>
 </template>
 <style lang="scss">
@@ -88,18 +90,36 @@ onMounted(()=>{
     max-width: 120px;
     max-height: 120px;
     border-radius: 68px;
+    box-shadow: -2px 10px 22px 3px rgba(0,0,0,0.75);
 }
-.header{
-  display:flex;
-  align-items:center;
-  &__user-name{
+
+.profile-container{
+  background-color:#212121;
+  padding-top:20px;
+  padding-bottom:20px;
+  padding-left:25px;
+  padding-right:25px;
+  border-radius:10px;
+  box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
+  
+  .header{
+    display:flex;
+    align-items:center;
+    margin-bottom:15px;
+  
+  .user-name{
     margin-left:25px;
     font-size: 45px;
     font-weight: bold;
   }
-  &__top-tracks{
+}
+  .top-tracks-title{
     font-weight: 600;
     font-size: 25px;
+  }
+  .top-tracks-songs{
+    margin-top:10px;
+    margin-bottom:10px;
   }
 }
 </style>

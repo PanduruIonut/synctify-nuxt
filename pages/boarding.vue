@@ -2,8 +2,11 @@
 import { UserSettings } from "@/types/user";
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
+import { useRouter } from 'vue-router'
 
 const store = useUser();
+const router = useRouter()
+
 const userSettings = ref<UserSettings>({
   clientId: store.user.settings.clientId,
   clientSecret: store.user.settings.clientSecret,
@@ -16,6 +19,7 @@ function saveUserSettings() {
     toast.success("Settings saved successfully!", {
       position: toast.POSITION.TOP_CENTER,
     });
+    router.push('/')
   } catch (error) {
     toast.error("An error occurred while saving your settings", {
       position: toast.POSITION.TOP_CENTER,

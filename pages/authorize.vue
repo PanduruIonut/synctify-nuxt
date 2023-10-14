@@ -5,7 +5,7 @@
                 src="https://play-lh.googleusercontent.com/eN0IexSzxpUDMfFtm-OyM-nNs44Y74Q3k51bxAMhTvrTnuA4OGnTi_fodN4cl-XxDQc"
                 alt="Spotify" width="100" height="100" />
             <p class="container__button">
-                <v-btn @click="authorizeSpotify">Authorize</v-btn>
+                <button @click="authorizeSpotify">Authorize</button>
             </p>
         </div>
     </div>
@@ -29,7 +29,7 @@ const authorizeSpotify = async () => {
 .container-fullwidth {
     width: 100%;
     height: 100vh;
-    background-color: #191414;
+    background-color: #121212;
     display: flex;
     justify-content: center;
     align-items: center;
