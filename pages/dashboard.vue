@@ -40,6 +40,7 @@ const lastSync = ref()
 
 
 async function fetchSongs() {
+  if(!store || !store.user || !store.user.id) { return }
   try {
     const response = await handleFetch(`http://localhost:8000/user/liked_songs/${store.user.id}`, {
       method: 'GET',
@@ -68,7 +69,7 @@ const syncPlaylist = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ access_token: store.user.accessToken }),
+        body: JSON.stringify({ access_token: store.user.accessToken, refresh_token: store.user.refreshToken, expires_in: store.user.tokenExpiry}),
       });
 
       if (!response.ok) {
@@ -129,6 +130,13 @@ watch(songs, () => {
   totalPages.value = Math.ceil(songs.value.length / itemsPerPage.value);
 });
 
+const onUserIdChanged = (newUserId, oldUserId) => {
+      if (newUserId) {
+        fetchSongs()
+      }
+    }
+watch(() => store.user.id, onUserIdChanged)
+
 onMounted(fetchSongs);
 </script>
 <style>
@@ -178,5 +186,6 @@ body {
   margin-top:17px;
   background-color: #212121;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
+  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, #212121);background:linear-gradient(to bottom,  #212121 90%, rgba(0,0,0,0));
 }
 </style>
