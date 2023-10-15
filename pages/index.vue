@@ -11,7 +11,7 @@ if (process.client) {
     if (settings) {
         store.user.accessToken ? router.push('/dashboard') : router.push('/authorize')
     } else {
-        router.push('/boarding')
+        router.push('/settings')
     }
 }
 </script>
