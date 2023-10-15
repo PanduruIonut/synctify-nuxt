@@ -186,6 +186,7 @@ body {
   margin-top:17px;
   background-color: #212121;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
-  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, #212121);background:linear-gradient(to bottom,  #212121 90%, rgba(0,0,0,0));
+  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, #212121);
+  background:linear-gradient(to bottom,  #212121 90%, rgba(0,0,0,0));
 }
 </style>
