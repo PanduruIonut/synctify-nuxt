@@ -142,7 +142,9 @@ watch(() => store.user.id, onUserIdChanged)
 
 watchEffect(() => {
       setTimeout(() => {
-        showUserStatsSkeleton.value = false;
+        if(store.user.id){
+          showUserStatsSkeleton.value = false;
+        }
       }, 100);
     });
 
