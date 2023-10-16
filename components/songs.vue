@@ -101,7 +101,7 @@ watch(itemsPerPage, (newValue, oldValue) => {
     <template v-slot:item="{ item }">
       <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
         @click="handleRowClick(item)" :class="{ 'selected-row': selectedRow === item.id }">
-        <td v-html="selectedRow === item.id ? '⏸' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
+        <td v-html="selectedRow === item.id ? '■' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
         <td>
           <Song :song="item" />
         </td>
