@@ -84,6 +84,7 @@ onMounted(()=>{
     </div>
 </template>
 <style lang="scss">
+@import '~/assets/css/main.scss';
 .img{
   margin-top: 5px;
     margin-bottom: 5px;
@@ -94,14 +95,14 @@ onMounted(()=>{
 }
 
 .profile-container{
-  background-color:#212121;
+  background-color:$nero;
   padding-top:20px;
   padding-bottom:20px;
   padding-left:25px;
   padding-right:25px;
   border-radius:10px;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
-  background:linear-gradient(to bottom, #212121 65%, rgba(0,0,0,0));
+  background:linear-gradient(to bottom, $nero 65%, rgba(0,0,0,0));
   
   
   .header{

@@ -115,21 +115,23 @@ watch(itemsPerPage, (newValue, oldValue) => {
 </template>
 
 <style lang="scss">
+@import '~/assets/css/main.scss';
 #player {
   display: none
 }
 
 .table {
-  background-color: #212121;
+  background-color: $nero;
   border-radius: 10px;
   box-shadow: -2px 10px 22px 3px rgba(0, 0, 0, 0.75);
-  background:linear-gradient(to bottom, #212121 15%, rgba(0,0,0,0));
+  background:linear-gradient(to bottom, $nero 15%, rgba(0,0,0,0));
 }
 
 tbody {
   tr:hover {
-    background: #404040;
+    background: $eclipse;
     transition: background 0.3s ease-in;
     border-radius: 15px;
+    cursor:pointer;
   }
 }</style>

@@ -139,9 +139,10 @@ watch(() => store.user.id, onUserIdChanged)
 
 onMounted(fetchSongs);
 </script>
-<style>
+<style lang="scss">
+@import '~/assets/css/main.scss';
 body {
-  background-color: #121212;
+  background-color: $codGray;
   color: white;
 }
 
@@ -171,11 +172,11 @@ body {
 }
 
 .v-btn {
-  background-color: #212121 !important;
+  background-color: $nero !important;
 }
 
 .v-btn:hover {
-  background-color: #404040 !important;
+  background-color: $eclipse !important;
 }
 
 .v-btn__overlay {
@@ -184,9 +185,9 @@ body {
 .sync-settings{
   border-radius:10px;
   margin-top:17px;
-  background-color: #212121;
+  background-color: $nero;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
-  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, #212121);
-  background:linear-gradient(to bottom,  #212121 90%, rgba(0,0,0,0));
+  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, $nero);
+  background:linear-gradient(to bottom,  $nero 90%, rgba(0,0,0,0));
 }
 </style>

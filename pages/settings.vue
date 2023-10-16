@@ -29,20 +29,21 @@ function saveUserSettings() {
 </script>
 
 <style lang="scss">
+@import '~/assets/css/main.scss';
 .centered-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color:#121212
+  background-color:$codGray
 }
 
 .settings-card {
   border-radius:15px;
-  background-color: #212121;
+  background-color: $nero;
   text-align: center;
   padding:20px;
-  background:linear-gradient(to bottom, #212121 85%, rgba(0,0,0,0));
+  background:linear-gradient(to bottom, $nero 85%, rgba(0,0,0,0));
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
 
   &__text-fields {
@@ -57,11 +58,11 @@ function saveUserSettings() {
   }
 
   .v-text-field:hover {
-    background-color: #404040 !important;
+    background-color: $eclipse !important;
   }
 
   .v-text-field__overlay {
-    background-color: #404040 !important;
+    background-color: $eclipse !important;
   }
 
   .v-field__overlay {

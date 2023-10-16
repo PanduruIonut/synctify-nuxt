@@ -25,11 +25,12 @@ const authorizeSpotify = async () => {
     window.location.href = authUrl;
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
+@import '~/assets/css/main.scss';
 .container-fullwidth {
     width: 100%;
     height: 100vh;
-    background-color: #121212;
+    background-color: $codGray;
     display: flex;
     justify-content: center;
     align-items: center;
