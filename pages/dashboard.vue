@@ -2,14 +2,16 @@
   <div class="container-full-width">
     <v-row>
       <v-col cols="3">
-        <UserStats :last-sync="lastSync" />
-        <div class="sync-settings">
+        <UserStatsSkeleton v-if="showUserStatsSkeleton"/>
+        <UserStats v-else :last-sync="lastSync" />
+        <div class="sync-settings" v-if="!showUserStatsSkeleton">
           <v-btn @click="sync">Sync</v-btn>
         </div>
       </v-col>
       <v-col cols="9">
         <div class="songs">
-          <Songs :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
+          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0" elevation="12"/>
+          <Songs v-else :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
             :items-per-page="itemsPerPage" />
         </div>
         <div class="pagination">
@@ -37,6 +39,7 @@ const itemsPerPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(1);
 const lastSync = ref()
+const showUserStatsSkeleton = ref(true);
 
 
 async function fetchSongs() {
@@ -136,6 +139,12 @@ const onUserIdChanged = (newUserId, oldUserId) => {
       }
     }
 watch(() => store.user.id, onUserIdChanged)
+
+watchEffect(() => {
+      setTimeout(() => {
+        showUserStatsSkeleton.value = false;
+      }, 100);
+    });
 
 onMounted(fetchSongs);
 </script>
