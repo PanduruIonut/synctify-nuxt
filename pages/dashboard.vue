@@ -81,6 +81,8 @@ const syncPlaylist = () => {
           new Error(`Failed to create playlist. Status: ${response.status}`)
         );
         return;
+      } else{
+        fetchSongs()
       }
 
       const data = await response.json();
