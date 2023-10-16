@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="3">
         <UserStatsSkeleton v-if="showUserStatsSkeleton"/>
-        <UserStats v-else :last-sync="lastSync" />
+        <UserStats v-else :last-sync="lastSync" @show-skeleton="displayUserSkeleton()" />
         <div class="sync-settings" v-if="!showUserStatsSkeleton">
           <v-btn @click="sync">Sync</v-btn>
         </div>
@@ -40,12 +40,13 @@ const currentPage = ref(1);
 const totalPages = ref(1);
 const lastSync = ref()
 const showUserStatsSkeleton = ref(true);
+const runtimeConfig = useRuntimeConfig();
 
 
 async function fetchSongs() {
   if(!store || !store.user || !store.user.id) { return }
   try {
-    const response = await handleFetch(`http://localhost:8000/user/liked_songs/${store.user.id}`, {
+    const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/user/liked_songs/${store.user.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -67,7 +68,7 @@ async function fetchSongs() {
 const syncPlaylist = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await handleFetch("http://localhost:8000/create_playlist", {
+      const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/create_playlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -137,14 +138,15 @@ const onUserIdChanged = (newUserId, oldUserId) => {
       if (newUserId) {
         fetchSongs()
       }
-    }
+}
+const displayUserSkeleton= () =>{
+  showUserStatsSkeleton.value = true;
+}
 watch(() => store.user.id, onUserIdChanged)
 
 watchEffect(() => {
       setTimeout(() => {
-        if(store.user.id){
           showUserStatsSkeleton.value = false;
-        }
       }, 100);
     });
 

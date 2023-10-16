@@ -12,6 +12,7 @@ import handleFetch from '@/services/api';
 const route = useRoute();
 const router = useRouter();
 const store = useUser()
+const runtimeConfig = useRuntimeConfig();
 
 
 
@@ -26,7 +27,7 @@ const exchangeAuthorizationCodeForToken = async (code: string) => {
         code: code
     }
     try {
-        const response = await handleFetch('http://127.0.0.1:8000/callback', {
+        const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/callback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

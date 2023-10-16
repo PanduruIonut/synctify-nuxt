@@ -8,6 +8,9 @@ defineProps<{ lastSync: string }>();
 const store = useUser()
 const songs = ref()
 const user = ref()
+const runtimeConfig = useRuntimeConfig();
+const emit = defineEmits(["showSkeleton"])
+
 
 async function getMostListenedSongs() {
     handleFetch('https://api.spotify.com/v1/me/top/tracks?limit=5&time_range=short_term', {
@@ -31,7 +34,7 @@ async function getMostListenedSongs() {
 }
 
 async function getUser(){
-    handleFetch('http://localhost:8000/me', {
+    handleFetch(`${runtimeConfig.public.API_BASE_URL}/me`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${store.user.accessToken}`
@@ -40,6 +43,7 @@ async function getUser(){
     })
   .then((response) => {
     if (!response.ok) {
+      emit('showSkeleton');
       throw new Error(`Failed to fetch data. Status: ${response.status}`);
     }
     return response.json();
