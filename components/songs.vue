@@ -133,5 +133,8 @@ tbody {
     transition: background 0.3s ease-in;
     border-radius: 15px;
     cursor:pointer;
+    td{
+      background-color:$eclipse !important;
+    }
   }
 }</style>
