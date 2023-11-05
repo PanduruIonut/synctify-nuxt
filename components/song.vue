@@ -11,12 +11,13 @@ onUpdated(() => {
 });
 function getModifiedSong(song: Song) {
   const modified = { ...song };
+  modified.images = JSON.parse(modified.images);
   return modified;
 }
 </script>
 <template>
   <div class="song">
-    <v-img class="song__image" :src="modifiedSong.images[2]" />
+    <v-img class="song__image" :src="modifiedSong.images[2].url" />
     <div class="song__info">
       <v-label class="song__info-title">{{ modifiedSong.title }}</v-label>
       <v-label class="song__info-artist">{{ modifiedSong.artist }}</v-label>

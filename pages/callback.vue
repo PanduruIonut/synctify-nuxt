@@ -27,7 +27,7 @@ const exchangeAuthorizationCodeForToken = async (code: string) => {
         code: code
     }
     try {
-        const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/callback`, {
+        const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/callback`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

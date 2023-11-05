@@ -63,7 +63,7 @@ const headers = [
     key: 'id',
   },
   { title: 'Title', key: 'title', align: 'start' },
-  { title: 'Artist', key: 'artist', align: 'start' },
+  { title: 'Artists', key: 'artists', align: 'start' },
   { title: 'Album', key: 'album', align: 'start' },
   { title: 'Date Added', key: 'added_at', align: 'start' },
 ]
@@ -105,7 +105,7 @@ watch(itemsPerPage, (newValue, oldValue) => {
         <td>
           <Song :song="item" />
         </td>
-        <td>{{ item.artist }}</td>
+        <td>{{ item.artists }}</td>
         <td>{{ item.album }}</td>
         <td>{{ formatTimestamp(item.added_at) }}</td>
       </tr>

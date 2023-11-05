@@ -34,7 +34,7 @@ async function getMostListenedSongs() {
 }
 
 async function getUser(){
-    handleFetch(`${runtimeConfig.public.API_BASE_URL}/me`, {
+    handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/me`, {
         method: "POST",
         headers: {
             "Authorization": `Bearer ${store.user.accessToken}`
@@ -64,7 +64,7 @@ function trackToSong(response: any): SongType {
     artist: response.artists[0].name,
     album: response.album.name,
     preview_url: response.preview_url,
-    images: response.album.images.map((image: any) => image.url),
+    images: JSON.stringify(response.album.images),
   };
 }
 

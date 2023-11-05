@@ -46,7 +46,7 @@ const runtimeConfig = useRuntimeConfig();
 async function fetchSongs() {
   if(!store || !store.user || !store.user.id) { return }
   try {
-    const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/user/liked_songs/${store.user.id}`, {
+    const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/user/get_liked_songs/${store.user.id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ async function fetchSongs() {
 const syncPlaylist = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/create_playlist`, {
+      const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/create_playlist`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
