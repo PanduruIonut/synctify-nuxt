@@ -5,7 +5,7 @@ const refreshToken = async () => {
   const user_id = cookies.value.user.id 
   const client_secret = cookies.value.user.settings.clientId 
   const client_id = cookies.value.user.settings.clientSecret 
-    const response = await fetch(`${runtimeConfig.public.API_BASE_URL}/refresh_token`, {
+    const response = await fetch(`${runtimeConfig.public.API_BASE_URL}/api/user/refresh_token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
