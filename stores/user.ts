@@ -15,6 +15,8 @@ export const useUser = defineStore('storeId', {
                 accessToken: '',
                 refreshToken: '',
                 tokenExpiry: '',
+                pusherAuthenticated: false,
+                fetchSongsNow: false
             }
         }
     },

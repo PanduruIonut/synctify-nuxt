@@ -11,4 +11,6 @@ export type User = {
     refreshToken?: string;
     tokenExpiry?: string,
     id?: string;
+    pusherAuthenticated: boolean
+    fetchSongsNow: boolean
 }

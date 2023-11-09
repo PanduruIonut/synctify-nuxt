@@ -3,9 +3,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       API_BASE_URL: process.env.API_BASE_URL,
- 
+      PUSHER_KEY: process.env.PUSHER_KEY,
     },
   },
+  plugins: ['~/plugins/laravel-echo.ts'],
   css: ['vuetify/lib/styles/main.sass', '~/assets/css/main.scss'],
   build: {
     transpile: ['vuetify'],
@@ -31,5 +32,5 @@ export default defineNuxtConfig({
       ['defineStore', 'definePiniaStore'],
     ],
   },
-  ssr: true,
+  ssr: false,
 })

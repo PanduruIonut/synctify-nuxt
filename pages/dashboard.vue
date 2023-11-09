@@ -2,7 +2,7 @@
   <div class="container-full-width">
     <v-row>
       <v-col cols="3">
-        <UserStatsSkeleton v-if="showUserStatsSkeleton"/>
+        <UserStatsSkeleton v-if="showUserStatsSkeleton" />
         <UserStats v-else :last-sync="lastSync" @show-skeleton="displayUserSkeleton()" />
         <div class="sync-settings" v-if="!showUserStatsSkeleton">
           <v-btn @click="sync">Sync</v-btn>
@@ -10,7 +10,7 @@
       </v-col>
       <v-col cols="9">
         <div class="songs">
-          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0" elevation="12"/>
+          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0" elevation="12" />
           <Songs v-else :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
             :items-per-page="itemsPerPage" />
         </div>
@@ -44,7 +44,7 @@ const runtimeConfig = useRuntimeConfig();
 
 
 async function fetchSongs() {
-  if(!store || !store.user || !store.user.id) { return }
+  if (!store || !store.user || !store.user.id) { return }
   try {
     const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/user/get_liked_songs/${store.user.id}`, {
       method: 'GET',
@@ -73,7 +73,7 @@ const syncPlaylist = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ access_token: store.user.accessToken, refresh_token: store.user.refreshToken, expires_in: store.user.tokenExpiry}),
+        body: JSON.stringify({ access_token: store.user.accessToken, refresh_token: store.user.refreshToken, expires_in: store.user.tokenExpiry }),
       });
 
       if (!response.ok) {
@@ -81,7 +81,7 @@ const syncPlaylist = () => {
           new Error(`Failed to create playlist. Status: ${response.status}`)
         );
         return;
-      } else{
+      } else {
         fetchSongs()
       }
 
@@ -98,7 +98,7 @@ const sync = () => {
     syncPlaylist,
     {
       pending: "Synchronizing your liked songs ⏳︎",
-      success: "Playlist synchronized 👌",
+      success: "Your playlist is being synchronized 👌",
       error: "Error while synchronizing 🤯",
     },
     {
@@ -137,25 +137,40 @@ watch(songs, () => {
 });
 
 const onUserIdChanged = (newUserId, oldUserId) => {
-      if (newUserId) {
-        fetchSongs()
-      }
+  if (newUserId) {
+    fetchSongs()
+  }
 }
-const displayUserSkeleton= () =>{
+
+const fetchSongsNow = (status:boolean, oldStatus:boolean) => {
+  if (status) {
+    fetchSongs().then(()=>{
+      store.user.fetchSongsNow = false;
+    
+    })
+
+  }
+}
+const displayUserSkeleton = () => {
   showUserStatsSkeleton.value = true;
 }
 watch(() => store.user.id, onUserIdChanged)
 
-watchEffect(() => {
-      setTimeout(() => {
-          showUserStatsSkeleton.value = false;
-      }, 100);
-    });
+watch(() => store.user.fetchSongsNow, fetchSongsNow)
 
-onMounted(fetchSongs);
+watchEffect(() => {
+  setTimeout(() => {
+    showUserStatsSkeleton.value = false;
+  }, 100);
+});
+
+onMounted(() => {
+  fetchSongs();
+});
 </script>
 <style lang="scss">
 @import '~/assets/css/main.scss';
+
 body {
   background-color: $codGray;
   color: white;
@@ -172,9 +187,9 @@ body {
   text-align: center;
 }
 
-.current-page{
-  margin-left:5px;
-  margin-right:5px;
+.current-page {
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .songs {
@@ -197,12 +212,13 @@ body {
 .v-btn__overlay {
   background-color: transparent !important;
 }
-.sync-settings{
-  border-radius:10px;
-  margin-top:17px;
+
+.sync-settings {
+  border-radius: 10px;
+  margin-top: 17px;
   background-color: $nero;
-  box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
-  background:linear-gradient(to bottom, rgba(0,0,0,0) 90%, $nero);
-  background:linear-gradient(to bottom,  $nero 90%, rgba(0,0,0,0));
+  box-shadow: 4px 4px 16px 1px rgba(0, 0, 0, 0.75);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 90%, $nero);
+  background: linear-gradient(to bottom, $nero 90%, rgba(0, 0, 0, 0));
 }
 </style>
