@@ -4,10 +4,10 @@ import Song from '@/components/song.vue'
 import {Song as SongType} from '@/types/song'
 import handleFetch from '@/services/api';
 
-defineProps<{ lastSync: string }>();
 const store = useUser()
 const songs = ref()
 const user = ref()
+const lastSync = ref(store.user.lastSync)
 const runtimeConfig = useRuntimeConfig();
 const emit = defineEmits(["showSkeleton"])
 
@@ -67,6 +67,10 @@ function trackToSong(response: any): SongType {
     images: JSON.stringify(response.album.images),
   };
 }
+watch(() => store.user.lastSync, (newLastSync, oldLastSync) => {
+  lastSync.value = newLastSync
+})
+
 
 
 onMounted(()=>{
@@ -84,7 +88,7 @@ onMounted(()=>{
       <div class="top-tracks-songs">
         <Song v-for="song in songs" :song="trackToSong(song)" />
       </div>
-        <span class="lastSync" v-if="lastSync">Last sync: {{ lastSync }}</span>
+        <span class="lastSync">Last sync: {{ lastSync }}</span>
     </div>
 </template>
 <style lang="scss">

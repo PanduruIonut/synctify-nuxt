@@ -13,4 +13,5 @@ export type User = {
     id?: string;
     pusherAuthenticated: boolean
     fetchSongsNow: boolean
+    lastSync?: string
 }

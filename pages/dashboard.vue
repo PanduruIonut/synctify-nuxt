@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="3">
         <UserStatsSkeleton v-if="showUserStatsSkeleton" />
-        <UserStats v-else :last-sync="lastSync" @show-skeleton="displayUserSkeleton()" />
+        <UserStats v-if="!showUserStatsSkeleton" @show-skeleton="displayUserSkeleton()" />
         <div class="sync-settings" v-if="!showUserStatsSkeleton">
           <v-btn @click="sync">Sync</v-btn>
         </div>
@@ -38,7 +38,6 @@ const store = useUser();
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
 const totalPages = ref(1);
-const lastSync = ref()
 const showUserStatsSkeleton = ref(true);
 const runtimeConfig = useRuntimeConfig();
 
@@ -59,7 +58,6 @@ async function fetchSongs() {
 
     const res = await response.json();
     songs.value = res.liked_songs
-    lastSync.value = res.last_synced
     updateDisplayedSongs();
   } catch (error) {
     console.error(error);
