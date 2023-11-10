@@ -88,7 +88,7 @@ onMounted(()=>{
       <div class="top-tracks-songs">
         <Song v-for="song in songs" :song="trackToSong(song)" />
       </div>
-        <span class="lastSync">Last sync: {{ lastSync }}</span>
+        <span class="lastSync" v-if="lastSync">Last sync: {{ lastSync }}</span>
     </div>
 </template>
 <style lang="scss">
