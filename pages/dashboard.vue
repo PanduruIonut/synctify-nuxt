@@ -30,6 +30,7 @@ import Songs from '@/components/songs.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
 import handleFetch from '@/services/api';
+import formatDateTime from '@/utils/datetime';
 
 
 const songs = ref([]);
@@ -58,6 +59,7 @@ async function fetchSongs() {
 
     const res = await response.json();
     songs.value = res.liked_songs
+    store.user.lastSync = formatDateTime(res.last_sync)
     updateDisplayedSongs();
   } catch (error) {
     console.error(error);

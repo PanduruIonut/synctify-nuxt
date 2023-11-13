@@ -1,6 +1,7 @@
 import Pusher from 'pusher-js'
 import { useUser } from '@/stores/user'
 import { toast } from "vue3-toastify";
+import formatDateTime from '@/utils/datetime'
 export const usePusher = () => {
     const runtimeConfig = useRuntimeConfig();
     const store = useUser()
@@ -48,16 +49,8 @@ export const usePusher = () => {
                     toast.success(data.status, {
                         position: toast.POSITION.TOP_CENTER,
                     });
-
-                    const date = new Date(data.current_time);
-                    const day = date.getDate().toString().padStart(2, "0");
-                    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-                    const year = date.getFullYear();
-                    const hours = date.getHours().toString().padStart(2, "0");
-                    const minutes = date.getMinutes().toString().padStart(2, "0");
-                    const lastSync = `${day}/${month}/${year} ${hours}:${minutes}`;
-
-                    store.user.lastSync = lastSync;
+                    
+                    store.user.lastSync = formatDateTime(data.current_time);;
                     store.user.fetchSongsNow = true;
 
                 } else {
