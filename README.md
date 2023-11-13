@@ -1,6 +1,6 @@
 # Synctify
 This repository is the front-end interface, built using Nuxt 3, Vue 3, Pinia, and TypeScript.
-It collaborates with a Python backend, enabling you to seamlessly sync and preview your Spotify liked songs daily.
+It uses Synctify-Laravel, enabling to seamlessly sync and preview your Spotify liked songs daily.
 
 More features to come.
 
