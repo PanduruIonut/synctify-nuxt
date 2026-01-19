@@ -9,14 +9,33 @@
         </div>
       </v-col>
       <v-col cols="9">
+        <div class="search-container">
+          <v-text-field
+            v-model="searchQuery"
+            placeholder="Search songs, artists, albums..."
+            prepend-inner-icon="mdi-magnify"
+            variant="outlined"
+            density="compact"
+            clearable
+            hide-details
+            class="search-input"
+            @click:clear="searchQuery = ''"
+          />
+          <span v-if="searchQuery" class="search-results-count">
+            {{ filteredSongs.length }} results
+          </span>
+        </div>
         <div class="songs">
-          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0" elevation="12" />
-          <Songs v-else :songs="displayedSongs" :total-songs="songs.length" @setItemsPerPage="handleItemsPerPageChange"
+          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0 && !searchQuery" elevation="12" />
+          <div v-else-if="displayedSongs.length == 0 && searchQuery" class="no-results">
+            No songs found matching "{{ searchQuery }}"
+          </div>
+          <Songs v-else :songs="displayedSongs" :total-songs="filteredSongs.length" @setItemsPerPage="handleItemsPerPageChange"
             :items-per-page="itemsPerPage" />
         </div>
-        <div class="pagination">
+        <div class="pagination" v-if="totalPages > 1">
           <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
-          <span class="current-page">{{ currentPage }}</span>
+          <span class="current-page">{{ currentPage }} / {{ totalPages }}</span>
           <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
         </div>
       </v-col>
@@ -25,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import Songs from '@/components/songs.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
@@ -35,6 +54,7 @@ import formatDateTime from '@/utils/datetime';
 
 const songs = ref([]);
 const displayedSongs = ref([]);
+const searchQuery = ref('');
 const store = useUser();
 const itemsPerPage = ref(10);
 const currentPage = ref(1);
@@ -42,6 +62,20 @@ const totalPages = ref(1);
 const showUserStatsSkeleton = ref(true);
 const runtimeConfig = useRuntimeConfig();
 
+const filteredSongs = computed(() => {
+  if (!searchQuery.value.trim()) {
+    return songs.value;
+  }
+
+  const query = searchQuery.value.toLowerCase().trim();
+  return songs.value.filter((song: any) => {
+    const title = (song.title || '').toLowerCase();
+    const artists = (song.artists || '').toLowerCase();
+    const album = (song.album || '').toLowerCase();
+
+    return title.includes(query) || artists.includes(query) || album.includes(query);
+  });
+});
 
 async function fetchSongs() {
   if (!store || !store.user || !store.user.id) { return }
@@ -110,7 +144,7 @@ const sync = () => {
 function updateDisplayedSongs() {
   const startIndex = (currentPage.value - 1) * itemsPerPage.value;
   const endIndex = startIndex + itemsPerPage.value;
-  displayedSongs.value = songs.value.slice(startIndex, endIndex);
+  displayedSongs.value = filteredSongs.value.slice(startIndex, endIndex);
 }
 
 function previousPage() {
@@ -132,8 +166,19 @@ const handleItemsPerPageChange = (newItemsPerPage: number) => {
   updateDisplayedSongs();
 };
 
-watch(songs, () => {
-  totalPages.value = Math.ceil(songs.value.length / itemsPerPage.value);
+// Watch filtered songs to update pagination
+watch(filteredSongs, () => {
+  totalPages.value = Math.ceil(filteredSongs.value.length / itemsPerPage.value) || 1;
+  // Reset to page 1 when search changes
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = 1;
+  }
+  updateDisplayedSongs();
+});
+
+// Reset to page 1 when search query changes
+watch(searchQuery, () => {
+  currentPage.value = 1;
 });
 
 const onUserIdChanged = (newUserId, oldUserId) => {
@@ -146,7 +191,7 @@ const fetchSongsNow = (status:boolean, oldStatus:boolean) => {
   if (status) {
     fetchSongs().then(()=>{
       store.user.fetchSongsNow = false;
-    
+
     })
 
   }
@@ -182,14 +227,54 @@ body {
   margin-top: 2%;
 }
 
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.search-input {
+  max-width: 400px;
+
+  .v-field {
+    background-color: $nero;
+    border-radius: 8px;
+  }
+
+  .v-field__input {
+    color: white;
+  }
+
+  .v-icon {
+    color: #888;
+  }
+}
+
+.search-results-count {
+  color: #888;
+  font-size: 14px;
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #888;
+  font-size: 16px;
+  background-color: $nero;
+  border-radius: 10px;
+}
+
 .pagination {
   margin-top: 15px;
   text-align: center;
 }
 
 .current-page {
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .songs {
