@@ -20,7 +20,7 @@ const authorizeSpotify = async () => {
 
     const authUrl = `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${encodeURIComponent(
         redirectUri
-    )}&scope=user-library-read playlist-modify-public playlist-modify-private user-top-read`;
+    )}&scope=user-library-read playlist-modify-public playlist-modify-private user-top-read streaming user-read-playback-state user-modify-playback-state`;
 
     window.location.href = authUrl;
 };

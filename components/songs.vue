@@ -1,37 +1,54 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import Song from "@/components/song.vue";
 import SongType from "@/components/songs.vue"
+import { useSpotifyPlayer } from "@/composables/useSpotifyPlayer"
 
 defineProps<{ songs: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
 
+const {
+  isReady,
+  isPlaying,
+  currentTrack,
+  error,
+  initPlayer,
+  playTrack,
+  togglePlay,
+  disconnect
+} = useSpotifyPlayer()
 
-const audioPlayer = ref<HTMLElement | null>(null);
-const currentSong = ref(null);
 const itemsPerPage = ref(10);
 const emit = defineEmits(["setItemsPerPage"])
 
-
-const togglePlay = (audioUrl: string, song: typeof SongType) => {
-  if (audioPlayer.value) {
-    if (currentSong.value === song.id) {
-      if ('paused' in audioPlayer.value && audioPlayer.value.paused) {
-        audioPlayer.value.play();
-      } else {
-        audioPlayer.value.pause();
-      }
-    } else {
-      audioPlayer.value.src = audioUrl;
-      audioPlayer.value.play();
-      currentSong.value = song.id;
-    }
+const handleSongClick = async (item: typeof Song) => {
+  if (!item.spotify_uri) {
+    console.warn('No Spotify URI for this track')
+    return
   }
-};
+
+  if (currentTrack.value === item.spotify_uri) {
+    // Same song - toggle play/pause
+    await togglePlay()
+  } else {
+    // Different song - play it
+    await playTrack(item.spotify_uri)
+  }
+
+  if (selectedRow.value === item.id) {
+    selectedRow.value = null;
+  } else {
+    selectedRow.value = item.id;
+  }
+}
 
 onMounted(async () => {
-  audioPlayer.value = document.getElementById("player");
-
+  await initPlayer()
 });
+
+onUnmounted(() => {
+  disconnect()
+})
+
 const formatTimestamp = (addedAt: string) => {
   const currentDate = new Date();
   const songAddedDate = new Date(addedAt);
@@ -70,21 +87,9 @@ const headers = [
 
 const loading = ref(false);
 
-
 const hoveredRow = ref(null);
 const selectedRow = ref(null);
 
-const handleRowClick = (item: typeof Song) => {
-  togglePlay(item.preview_url, item);
-  if (selectedRow.value === item.id) {
-    selectedRow.value = null;
-  } else {
-    if (selectedRow !== null) {
-      selectedRow.value = null;
-    }
-    selectedRow.value = item.id;
-  }
-}
 const handleItemsPerPageChanged = (newValue: number) => {
   emit('setItemsPerPage', newValue);
 }
@@ -94,14 +99,25 @@ watch(itemsPerPage, (newValue, oldValue) => {
   handleItemsPerPageChanged(newValue);
 });
 
+const getPlayIcon = (item: any) => {
+  if (selectedRow.value === item.id) {
+    return isPlaying.value && currentTrack.value === item.spotify_uri ? '▐▐' : '▶︎'
+  }
+  if (hoveredRow.value === item.id) {
+    return '▶︎'
+  }
+  return item.id
+}
 </script>
 <template>
+  <div v-if="error" class="player-error">{{ error }}</div>
+  <div v-if="!isReady" class="player-loading">Connecting to Spotify...</div>
   <v-data-table-server class="table" :headers="headers" :items-length="totalSongs" :items="songs" :loading="loading"
     v-model:items-per-page="itemsPerPage" item-value="id">
     <template v-slot:item="{ item }">
       <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
-        @click="handleRowClick(item)" :class="{ 'selected-row': selectedRow === item.id }">
-        <td v-html="selectedRow === item.id ? '■' : (hoveredRow === item.id ? '▶︎' : item.id)"></td>
+        @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': currentTrack === item.spotify_uri && isPlaying }">
+        <td v-html="getPlayIcon(item)"></td>
         <td>
           <Song :song="item" />
         </td>
@@ -111,13 +127,23 @@ watch(itemsPerPage, (newValue, oldValue) => {
       </tr>
     </template>
   </v-data-table-server>
-  <audio controls id="player"></audio>
 </template>
 
 <style lang="scss">
 @import '~/assets/css/main.scss';
-#player {
-  display: none
+
+.player-error {
+  color: #ff4444;
+  padding: 10px;
+  margin-bottom: 10px;
+  background: rgba(255, 68, 68, 0.1);
+  border-radius: 5px;
+}
+
+.player-loading {
+  color: #1DB954;
+  padding: 10px;
+  margin-bottom: 10px;
 }
 
 .table {
@@ -137,4 +163,11 @@ tbody {
       background-color:$eclipse !important;
     }
   }
-}</style>
+
+  tr.playing {
+    td:first-child {
+      color: #1DB954;
+    }
+  }
+}
+</style>
