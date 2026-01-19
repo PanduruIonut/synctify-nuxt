@@ -81,56 +81,70 @@ onMounted(()=>{
 <template>
     <div class="profile-container">
       <div class="header">
-        <v-img class="img" v-if="user" :src="user.images[1].url"/>
+        <img class="profile-img" v-if="user && user.images && user.images[1]" :src="user.images[1].url" alt="Profile"/>
         <span v-if="user" class="user-name">{{ user.display_name  }}</span>
       </div>
       <span class="top-tracks-title">Top tracks this month</span>
       <div class="top-tracks-songs">
-        <Song v-for="song in songs" :song="trackToSong(song)" />
+        <div v-for="song in songs" :key="song.id" class="top-track-item">
+          <Song :song="trackToSong(song)" />
+        </div>
       </div>
-        <span class="lastSync" v-if="lastSync">Last sync: {{ lastSync }}</span>
+      <span class="lastSync" v-if="lastSync">Last sync: {{ lastSync }}</span>
     </div>
 </template>
 <style lang="scss">
 @import '~/assets/css/main.scss';
-.img{
-  margin-top: 5px;
-    margin-bottom: 5px;
-    max-width: 120px;
-    max-height: 120px;
-    border-radius: 68px;
-    box-shadow: -2px 10px 22px 3px rgba(0,0,0,0.75);
+
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: -2px 10px 22px 3px rgba(0,0,0,0.75);
 }
 
-.profile-container{
-  background-color:$nero;
-  padding-top:20px;
-  padding-bottom:20px;
-  padding-left:25px;
-  padding-right:25px;
-  border-radius:10px;
+.profile-container {
+  background-color: $nero;
+  padding: 20px 25px;
+  border-radius: 10px;
   box-shadow: 4px 4px 16px 1px rgba(0,0,0,0.75);
-  background:linear-gradient(to bottom, $nero 65%, rgba(0,0,0,0));
-  
-  
-  .header{
-    display:flex;
-    align-items:center;
-    margin-bottom:15px;
-  
-  .user-name{
-    margin-left:25px;
-    font-size: 45px;
-    font-weight: bold;
+  background: linear-gradient(to bottom, $nero 65%, rgba(0,0,0,0));
+
+  .header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .user-name {
+      margin-left: 25px;
+      font-size: 45px;
+      font-weight: bold;
+    }
   }
-}
-  .top-tracks-title{
+
+  .top-tracks-title {
     font-weight: 600;
     font-size: 25px;
+    display: block;
+    margin-bottom: 10px;
   }
-  .top-tracks-songs{
-    margin-top:10px;
-    margin-bottom:10px;
+
+  .top-tracks-songs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .top-track-item {
+    padding: 4px 0;
+  }
+
+  .lastSync {
+    display: block;
+    margin-top: 15px;
+    font-size: 12px;
+    color: #b3b3b3;
   }
 }
 </style>

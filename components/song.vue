@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { ref, onUpdated } from "vue";
 import { Song } from "@/types/song";
@@ -17,34 +16,56 @@ function getModifiedSong(song: Song) {
 </script>
 <template>
   <div class="song">
-    <v-img class="song__image" :src="modifiedSong.images[2].url" />
+    <div class="song__image-wrapper">
+      <img class="song__image" :src="modifiedSong.images[2].url" :alt="modifiedSong.title" />
+    </div>
     <div class="song__info">
-      <v-label class="song__info-title">{{ modifiedSong.title }}</v-label>
-      <v-label class="song__info-artist">{{ modifiedSong.artist }}</v-label>
+      <span class="song__info-title" :title="modifiedSong.title">{{ modifiedSong.title }}</span>
+      <span class="song__info-artist" :title="modifiedSong.artist">{{ modifiedSong.artist }}</span>
     </div>
   </div>
 </template>
 <style lang="scss">
 .song {
   display: flex;
-  &__image {
-    margin-top:5px;
-    margin-bottom:5px;
-    max-width: 60px;
-    max-height: 60px;
-    border-radius:5px;
+  align-items: center;
+
+  &__image-wrapper {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
   }
+
+  &__image {
+    width: 45px;
+    height: 45px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
   &__info {
     display: flex;
     flex-direction: column;
-    margin-left: 15px;
-    justify-content: space-evenly;
-    &-title {
-      font-size: 15px;
-      font-weight: 500;
-    }
+    margin-left: 12px;
+    min-width: 0;
+    flex: 1;
+
+    &-title,
     &-artist {
-      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    &-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: white;
+    }
+
+    &-artist {
+      font-size: 12px;
+      color: #b3b3b3;
     }
   }
 }

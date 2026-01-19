@@ -78,11 +78,12 @@ const headers = [
     align: 'start',
     sortable: true,
     key: 'id',
+    width: '60px',
   },
   { title: 'Title', key: 'title', align: 'start' },
   { title: 'Artists', key: 'artists', align: 'start' },
   { title: 'Album', key: 'album', align: 'start' },
-  { title: 'Date Added', key: 'added_at', align: 'start' },
+  { title: 'Date Added', key: 'added_at', align: 'start', width: '130px' },
 ]
 
 const loading = ref(false);
@@ -117,13 +118,13 @@ const getPlayIcon = (item: any) => {
     <template v-slot:item="{ item }">
       <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
         @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': currentTrack === item.spotify_uri && isPlaying }">
-        <td v-html="getPlayIcon(item)"></td>
+        <td style="width: 60px;" v-html="getPlayIcon(item)"></td>
         <td>
           <Song :song="item" />
         </td>
-        <td>{{ item.artists }}</td>
-        <td>{{ item.album }}</td>
-        <td>{{ formatTimestamp(item.added_at) }}</td>
+        <td class="text-truncate" :title="item.artists">{{ item.artists }}</td>
+        <td class="text-truncate" :title="item.album">{{ item.album }}</td>
+        <td style="width: 130px;">{{ formatTimestamp(item.added_at) }}</td>
       </tr>
     </template>
   </v-data-table-server>
@@ -150,7 +151,14 @@ const getPlayIcon = (item: any) => {
   background-color: $nero;
   border-radius: 10px;
   box-shadow: -2px 10px 22px 3px rgba(0, 0, 0, 0.75);
-  background:linear-gradient(to bottom, $nero 15%, rgba(0,0,0,0));
+  background: linear-gradient(to bottom, $nero 15%, rgba(0,0,0,0));
+}
+
+.text-truncate {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 tbody {
@@ -158,9 +166,9 @@ tbody {
     background: $eclipse;
     transition: background 0.3s ease-in;
     border-radius: 15px;
-    cursor:pointer;
-    td{
-      background-color:$eclipse !important;
+    cursor: pointer;
+    td {
+      background-color: $eclipse !important;
     }
   }
 
