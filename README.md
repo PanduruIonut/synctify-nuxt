@@ -1,4 +1,6 @@
 # Synctify Frontend
+## Preview
+<img width="1429" height="680" alt="image" src="https://github.com/user-attachments/assets/4813b648-a01c-4ed2-8759-a6652b856661" />
 
 A modern Spotify music library manager built with Nuxt 3, Vue 3, Pinia, and TypeScript. Seamlessly sync, browse, and manage your Spotify liked songs and playlists.
 
@@ -24,9 +26,6 @@ A modern Spotify music library manager built with Nuxt 3, Vue 3, Pinia, and Type
 - Pinia (State Management)
 - TypeScript
 - Vuetify 3
-
-## Preview
-![image](https://github.com/PanduruIonut/synctify-nuxt/assets/25410289/707ed227-5725-4fc3-948b-4004bffe7e3f)
 
 ## Related
 - [Synctify Backend](https://github.com/PanduruIonut/synctify-laravel) - Laravel API backend
