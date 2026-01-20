@@ -1,51 +1,81 @@
 <template>
-  <div class="container-full-width">
-    <v-row>
-      <v-col cols="3">
-        <UserStatsSkeleton v-if="showUserStatsSkeleton" />
-        <UserStats v-if="!showUserStatsSkeleton" @show-skeleton="displayUserSkeleton()" />
-        <div class="sync-settings" v-if="!showUserStatsSkeleton">
-          <v-btn @click="sync">Sync</v-btn>
-        </div>
-      </v-col>
-      <v-col cols="9">
-        <div class="search-container">
-          <v-text-field
-            v-model="searchQuery"
-            placeholder="Search songs, artists, albums..."
-            prepend-inner-icon="mdi-magnify"
-            variant="outlined"
-            density="compact"
-            clearable
-            hide-details
-            class="search-input"
-            @click:clear="searchQuery = ''"
-          />
-          <span v-if="searchQuery" class="search-results-count">
-            {{ filteredSongs.length }} results
+  <div class="dashboard-container">
+    <div class="left-panel">
+      <UserStatsSkeleton v-if="showUserStatsSkeleton" />
+      <UserStats v-if="!showUserStatsSkeleton" @show-skeleton="displayUserSkeleton()" />
+      <div class="sync-settings" v-if="!showUserStatsSkeleton">
+        <v-btn @click="sync">Sync Liked Songs</v-btn>
+      </div>
+      <Playlists v-if="!showUserStatsSkeleton" @selectPlaylist="handleSelectPlaylist" />
+    </div>
+    <div class="right-panel">
+      <!-- Breadcrumb / Context indicator -->
+      <div class="context-header">
+        <div class="context-info">
+          <span 
+            class="context-item" 
+            :class="{ active: !selectedPlaylist, clickable: selectedPlaylist }"
+            @click="backToLikedSongs"
+          >
+            Liked Songs
           </span>
+          <template v-if="selectedPlaylist">
+            <span class="context-separator">›</span>
+            <span class="context-item active">{{ selectedPlaylist.name }}</span>
+          </template>
         </div>
+        <v-btn 
+          v-if="selectedPlaylist" 
+          size="small" 
+          @click="backToLikedSongs"
+          class="back-btn"
+        >
+          ← Back to Liked Songs
+        </v-btn>
+      </div>
+
+      <div class="search-container">
+        <v-text-field
+          v-model="searchQuery"
+          :placeholder="selectedPlaylist ? `Search in ${selectedPlaylist.name}...` : 'Search songs, artists, albums...'"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          density="compact"
+          clearable
+          hide-details
+          class="search-input"
+          @click:clear="searchQuery = ''"
+        />
+        <span v-if="searchQuery" class="search-results-count">
+          {{ filteredSongs.length }} results
+        </span>
+      </div>
+      <div class="songs-wrapper">
         <div class="songs">
-          <v-skeleton-loader type="table" height="670" v-if="displayedSongs.length == 0 && !searchQuery" elevation="12" />
+          <v-skeleton-loader type="table" v-if="displayedSongs.length == 0 && !searchQuery && loadingSongs" elevation="12" />
           <div v-else-if="displayedSongs.length == 0 && searchQuery" class="no-results">
             No songs found matching "{{ searchQuery }}"
+          </div>
+          <div v-else-if="displayedSongs.length == 0 && !loadingSongs" class="no-results">
+            {{ selectedPlaylist ? 'This playlist is empty' : 'No liked songs found' }}
           </div>
           <Songs v-else :songs="displayedSongs" :total-songs="filteredSongs.length" @setItemsPerPage="handleItemsPerPageChange"
             :items-per-page="itemsPerPage" />
         </div>
-        <div class="pagination" v-if="totalPages > 1">
-          <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
-          <span class="current-page">{{ currentPage }} / {{ totalPages }}</span>
-          <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
-        </div>
-      </v-col>
-    </v-row>
+      </div>
+      <div class="pagination" v-if="totalPages > 1">
+        <v-btn @click="previousPage" :disabled="currentPage === 1">←</v-btn>
+        <span class="current-page">{{ currentPage }} / {{ totalPages }}</span>
+        <v-btn @click="nextPage" :disabled="currentPage === totalPages">→</v-btn>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import Songs from '@/components/songs.vue';
+import Playlists from '@/components/Playlists.vue';
 import { useUser } from "@/stores/user";
 import { toast } from "vue3-toastify";
 import handleFetch from '@/services/api';
@@ -61,6 +91,8 @@ const currentPage = ref(1);
 const totalPages = ref(1);
 const showUserStatsSkeleton = ref(true);
 const runtimeConfig = useRuntimeConfig();
+const selectedPlaylist = ref<any>(null);
+const loadingSongs = ref(true);
 
 const filteredSongs = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -77,8 +109,9 @@ const filteredSongs = computed(() => {
   });
 });
 
-async function fetchSongs() {
+async function fetchLikedSongs() {
   if (!store || !store.user || !store.user.id) { return }
+  loadingSongs.value = true;
   try {
     const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/user/get_liked_songs/${store.user.id}`, {
       method: 'GET',
@@ -97,8 +130,54 @@ async function fetchSongs() {
     updateDisplayedSongs();
   } catch (error) {
     console.error(error);
+  } finally {
+    loadingSongs.value = false;
   }
 }
+
+async function fetchPlaylistSongs(playlistId: number) {
+  if (!store || !store.user || !store.user.id) { return }
+  loadingSongs.value = true;
+  try {
+    const response = await handleFetch(
+      `${runtimeConfig.public.API_BASE_URL}/api/user/${store.user.id}/playlist/${playlistId}`,
+      {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch playlist songs. Status: ${response.status}`);
+    }
+
+    const res = await response.json();
+    songs.value = res.songs || [];
+    updateDisplayedSongs();
+  } catch (error) {
+    console.error(error);
+  } finally {
+    loadingSongs.value = false;
+  }
+}
+
+function handleSelectPlaylist(playlist: any) {
+  selectedPlaylist.value = playlist;
+  searchQuery.value = '';
+  currentPage.value = 1;
+  fetchPlaylistSongs(playlist.id);
+  document.querySelector('.songs')?.scrollTo(0, 0);
+}
+
+function backToLikedSongs() {
+  if (!selectedPlaylist.value) return;
+  selectedPlaylist.value = null;
+  searchQuery.value = '';
+  currentPage.value = 1;
+  fetchLikedSongs();
+  document.querySelector('.songs')?.scrollTo(0, 0);
+}
+
 const syncPlaylist = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -116,7 +195,7 @@ const syncPlaylist = () => {
         );
         return;
       } else {
-        fetchSongs()
+        fetchLikedSongs()
       }
 
       const data = await response
@@ -183,22 +262,22 @@ watch(searchQuery, () => {
 
 const onUserIdChanged = (newUserId, oldUserId) => {
   if (newUserId) {
-    fetchSongs()
+    fetchLikedSongs()
   }
 }
 
 const fetchSongsNow = (status:boolean, oldStatus:boolean) => {
   if (status) {
-    fetchSongs().then(()=>{
+    fetchLikedSongs().then(()=>{
       store.user.fetchSongsNow = false;
-
     })
-
   }
 }
+
 const displayUserSkeleton = () => {
   showUserStatsSkeleton.value = true;
 }
+
 watch(() => store.user.id, onUserIdChanged)
 
 watch(() => store.user.fetchSongsNow, fetchSongsNow)
@@ -210,7 +289,8 @@ watchEffect(() => {
 });
 
 onMounted(() => {
-  fetchSongs();
+  fetchLikedSongs();
+  document.querySelector('.songs')?.scrollTo(0, 0);
 });
 </script>
 <style lang="scss">
@@ -219,12 +299,82 @@ onMounted(() => {
 body {
   background-color: $codGray;
   color: white;
+  margin: 0;
+  overflow: hidden;
 }
 
-.container-full-width {
-  margin-left: 20px;
-  margin-right: 20px;
-  margin-top: 2%;
+.dashboard-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.left-panel {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.context-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  flex-shrink: 0;
+}
+
+.context-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.context-item {
+  font-size: 14px;
+  color: #b3b3b3;
+  transition: color 0.2s;
+
+  &.clickable {
+    cursor: pointer;
+    
+    &:hover {
+      color: white;
+    }
+  }
+
+  &.active {
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.context-separator {
+  color: #666;
+  font-size: 14px;
+}
+
+.back-btn {
+  background-color: transparent !important;
+  border: 1px solid #b3b3b3 !important;
+  color: #b3b3b3 !important;
+  font-size: 12px !important;
+
+  &:hover {
+    border-color: white !important;
+    color: white !important;
+  }
 }
 
 .search-container {
@@ -232,6 +382,7 @@ body {
   align-items: center;
   gap: 12px;
   margin-bottom: 15px;
+  flex-shrink: 0;
 }
 
 .search-input {
@@ -256,6 +407,19 @@ body {
   font-size: 14px;
 }
 
+.songs-wrapper {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.songs {
+  height: 100%;
+  overflow: auto;
+  border-radius: 10px;
+  box-shadow: 4px 4px 16px 1px rgba(0, 0, 0, 0.75);
+}
+
 .no-results {
   display: flex;
   justify-content: center;
@@ -270,20 +434,12 @@ body {
 .pagination {
   margin-top: 15px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .current-page {
   margin-left: 10px;
   margin-right: 10px;
-}
-
-.songs {
-  flex-direction: column;
-  display: flex;
-  max-height: 670px;
-  overflow: auto;
-  border-radius: 10px;
-  box-shadow: 4px 4px 16px 1px rgba(0, 0, 0, 0.75);
 }
 
 .v-btn {
@@ -305,5 +461,6 @@ body {
   box-shadow: 4px 4px 16px 1px rgba(0, 0, 0, 0.75);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 90%, $nero);
   background: linear-gradient(to bottom, $nero 90%, rgba(0, 0, 0, 0));
+  flex-shrink: 0;
 }
 </style>
