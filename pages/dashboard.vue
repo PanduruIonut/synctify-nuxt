@@ -59,7 +59,7 @@
           <div v-else-if="displayedSongs.length == 0 && !loadingSongs" class="no-results">
             {{ selectedPlaylist ? 'This playlist is empty' : 'No liked songs found' }}
           </div>
-          <Songs v-else :songs="displayedSongs" :total-songs="filteredSongs.length" @setItemsPerPage="handleItemsPerPageChange"
+          <Songs v-else :songs="displayedSongs" :all-songs="filteredSongs" :total-songs="filteredSongs.length" @setItemsPerPage="handleItemsPerPageChange"
             :items-per-page="itemsPerPage" />
         </div>
       </div>
@@ -166,7 +166,6 @@ function handleSelectPlaylist(playlist: any) {
   searchQuery.value = '';
   currentPage.value = 1;
   fetchPlaylistSongs(playlist.id);
-  document.querySelector('.songs')?.scrollTo(0, 0);
 }
 
 function backToLikedSongs() {
@@ -175,7 +174,6 @@ function backToLikedSongs() {
   searchQuery.value = '';
   currentPage.value = 1;
   fetchLikedSongs();
-  document.querySelector('.songs')?.scrollTo(0, 0);
 }
 
 const syncPlaylist = () => {
@@ -290,7 +288,6 @@ watchEffect(() => {
 
 onMounted(() => {
   fetchLikedSongs();
-  document.querySelector('.songs')?.scrollTo(0, 0);
 });
 </script>
 <style lang="scss">

@@ -4,7 +4,7 @@ import Song from "@/components/song.vue";
 import SongType from "@/components/songs.vue"
 import { useSpotifyPlayer } from "@/composables/useSpotifyPlayer"
 
-const props = defineProps<{ songs: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
+const props = defineProps<{ songs: Array<typeof SongType>, allSongs?: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
 
 const {
   isReady,
@@ -20,9 +20,10 @@ const {
 const itemsPerPage = ref(10);
 const emit = defineEmits(["setItemsPerPage"])
 
-// Get all URIs from current songs for queue
+// Get all URIs from all songs for queue (not just current page)
 const allUris = computed(() => {
-  return props.songs
+  const songsToUse = props.allSongs || props.songs
+  return songsToUse
     .filter((s: any) => s.spotify_uri)
     .map((s: any) => s.spotify_uri)
 })
