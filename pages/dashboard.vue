@@ -1,10 +1,17 @@
 <template>
   <div class="dashboard-container">
+    <!-- Auth Warning Banner -->
+    <div v-if="authStatus === 'needs_reauth'" class="auth-warning-banner">
+      <span class="warning-icon">⚠️</span>
+      <span class="warning-text">Spotify authorization expired. Your music won't sync until you re-authorize.</span>
+      <a :href="authorizeUrl" class="reauth-link">Re-authorize now</a>
+    </div>
+
     <div class="left-panel">
       <UserStatsSkeleton v-if="showUserStatsSkeleton" />
       <UserStats v-if="!showUserStatsSkeleton" @show-skeleton="displayUserSkeleton()" />
       <div class="sync-settings" v-if="!showUserStatsSkeleton">
-        <v-btn @click="sync">Sync Liked Songs</v-btn>
+        <v-btn @click="sync" :disabled="authStatus === 'needs_reauth'">Sync Liked Songs</v-btn>
       </div>
       <Playlists v-if="!showUserStatsSkeleton" @selectPlaylist="handleSelectPlaylist" />
     </div>
@@ -93,6 +100,14 @@ const showUserStatsSkeleton = ref(true);
 const runtimeConfig = useRuntimeConfig();
 const selectedPlaylist = ref<any>(null);
 const loadingSongs = ref(true);
+const authStatus = ref('valid');
+
+const authorizeUrl = computed(() => {
+  const clientId = store.user?.settings?.clientId || '';
+  const redirectUri = encodeURIComponent(runtimeConfig.public.REDIRECT_URI || window.location.origin + '/callback');
+  const scopes = encodeURIComponent('user-library-read playlist-read-private');
+  return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
+});
 
 const filteredSongs = computed(() => {
   if (!searchQuery.value.trim()) {
@@ -108,6 +123,25 @@ const filteredSongs = computed(() => {
     return title.includes(query) || artists.includes(query) || album.includes(query);
   });
 });
+
+async function fetchAuthStatus() {
+  if (!store || !store.user || !store.user.id) { return }
+  try {
+    const response = await handleFetch(`${runtimeConfig.public.API_BASE_URL}/api/user/auth_status/${store.user.id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const res = await response.json();
+      authStatus.value = res.auth_status || 'valid';
+    }
+  } catch (error) {
+    console.error('Failed to fetch auth status:', error);
+  }
+}
 
 async function fetchLikedSongs() {
   if (!store || !store.user || !store.user.id) { return }
@@ -261,6 +295,7 @@ watch(searchQuery, () => {
 const onUserIdChanged = (newUserId, oldUserId) => {
   if (newUserId) {
     fetchLikedSongs()
+    fetchAuthStatus()
   }
 }
 
@@ -288,6 +323,7 @@ watchEffect(() => {
 
 onMounted(() => {
   fetchLikedSongs();
+  fetchAuthStatus();
 });
 </script>
 <style lang="scss">
@@ -300,10 +336,51 @@ body {
   overflow: hidden;
 }
 
+.auth-warning-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(90deg, #b91c1c, #dc2626);
+  color: white;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.warning-icon {
+  font-size: 18px;
+}
+
+.warning-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.reauth-link {
+  color: white;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
 .dashboard-container {
   display: flex;
   gap: 20px;
   padding: 20px;
+  padding-top: v-bind('authStatus === "needs_reauth" ? "70px" : "20px"');
   height: 100vh;
   box-sizing: border-box;
 }
