@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import Song from "@/components/song.vue";
 import SongType from "@/components/songs.vue"
 import { useSpotifyPlayer } from "@/composables/useSpotifyPlayer"
 
-defineProps<{ songs: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
+const props = defineProps<{ songs: Array<typeof SongType>, totalSongs: number, itemsPerPage: number }>();
 
 const {
   isReady,
@@ -20,18 +20,25 @@ const {
 const itemsPerPage = ref(10);
 const emit = defineEmits(["setItemsPerPage"])
 
+// Get all URIs from current songs for queue
+const allUris = computed(() => {
+  return props.songs
+    .filter((s: any) => s.spotify_uri)
+    .map((s: any) => s.spotify_uri)
+})
+
 const handleSongClick = async (item: typeof Song) => {
   if (!item.spotify_uri) {
     console.warn('No Spotify URI for this track')
     return
   }
 
-  if (currentTrack.value === item.spotify_uri) {
+  if (currentTrack.value?.uri === item.spotify_uri) {
     // Same song - toggle play/pause
     await togglePlay()
   } else {
-    // Different song - play it
-    await playTrack(item.spotify_uri)
+    // Different song - play it with the full queue
+    await playTrack(item.spotify_uri, allUris.value)
   }
 
   if (selectedRow.value === item.id) {
@@ -102,12 +109,16 @@ watch(itemsPerPage, (newValue, oldValue) => {
 
 const getPlayIcon = (item: any) => {
   if (selectedRow.value === item.id) {
-    return isPlaying.value && currentTrack.value === item.spotify_uri ? '▐▐' : '▶︎'
+    return isPlaying.value && currentTrack.value?.uri === item.spotify_uri ? '▐▐' : '▶︎'
   }
   if (hoveredRow.value === item.id) {
     return '▶︎'
   }
   return item.id
+}
+
+const isItemPlaying = (item: any) => {
+  return currentTrack.value?.uri === item.spotify_uri && isPlaying.value
 }
 </script>
 <template>
@@ -117,7 +128,7 @@ const getPlayIcon = (item: any) => {
     v-model:items-per-page="itemsPerPage" item-value="id">
     <template v-slot:item="{ item }">
       <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
-        @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': currentTrack === item.spotify_uri && isPlaying }">
+        @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': isItemPlaying(item) }">
         <td style="width: 60px;" v-html="getPlayIcon(item)"></td>
         <td>
           <Song :song="item" />
