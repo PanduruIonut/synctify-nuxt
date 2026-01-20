@@ -39,6 +39,7 @@
         >
           ← Back to Liked Songs
         </v-btn>
+        <v-btn v-if="selectedPlaylist" size="small" @click="importToLikedSongs" :loading="importing" class="import-btn" color="success">Import to Liked Songs</v-btn>
       </div>
 
       <div class="search-container">
@@ -100,6 +101,7 @@ const showUserStatsSkeleton = ref(true);
 const runtimeConfig = useRuntimeConfig();
 const selectedPlaylist = ref<any>(null);
 const loadingSongs = ref(true);
+const importing = ref(false);
 const authStatus = ref('valid');
 
 const authorizeUrl = computed(() => {
@@ -200,6 +202,34 @@ function handleSelectPlaylist(playlist: any) {
   searchQuery.value = '';
   currentPage.value = 1;
   fetchPlaylistSongs(playlist.id);
+}
+
+async function importToLikedSongs() {
+  if (!selectedPlaylist.value || !store.user?.id) return;
+  importing.value = true;
+  
+  try {
+    const response = await handleFetch(
+      `${runtimeConfig.public.API_BASE_URL}/api/user/${store.user.id}/playlist/${selectedPlaylist.value.id}/import-to-liked`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+    
+    if (!response.ok) throw new Error("Failed to import songs");
+    
+    const data = await response.json();
+    alert(`Imported ${data.imported_count} songs! (${data.skipped_count} duplicates skipped)`);
+    
+    backToLikedSongs();
+    fetchLikedSongs();
+  } catch (error) {
+    console.error("Import failed:", error);
+    alert("Failed to import songs");
+  } finally {
+    importing.value = false;
+  }
 }
 
 function backToLikedSongs() {
@@ -441,6 +471,11 @@ body {
 }
 
 .back-btn {
+}
+
+.import-btn {
+  margin-left: 8px;
+
   background-color: transparent !important;
   border: 1px solid #b3b3b3 !important;
   color: #b3b3b3 !important;
