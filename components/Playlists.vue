@@ -169,10 +169,11 @@ watch(() => store.user?.id, (newId) => {
 
 .playlists-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr;
   gap: 12px;
-  max-height: 400px;
+  max-height: none;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .playlist-card {
