@@ -18,6 +18,7 @@ const {
 } = useSpotifyPlayer()
 
 const itemsPerPage = ref(10);
+const page = ref(1);
 const emit = defineEmits(["setItemsPerPage"])
 
 // Get all URIs from all songs for queue (not just current page)
@@ -108,14 +109,15 @@ watch(itemsPerPage, (newValue, oldValue) => {
   handleItemsPerPageChanged(newValue);
 });
 
-const getPlayIcon = (item: any) => {
+const getPlayIcon = (item: any, index: number) => {
   if (selectedRow.value === item.id) {
     return isPlaying.value && currentTrack.value?.uri === item.spotify_uri ? '▐▐' : '▶︎'
   }
   if (hoveredRow.value === item.id) {
     return '▶︎'
   }
-  return item.id
+  // Calculate row number based on page and position
+  return (page.value - 1) * itemsPerPage.value + index + 1
 }
 
 const isItemPlaying = (item: any) => {
@@ -126,11 +128,11 @@ const isItemPlaying = (item: any) => {
   <div v-if="error" class="player-error">{{ error }}</div>
   <div v-if="!isReady" class="player-loading">Connecting to Spotify...</div>
   <v-data-table-server class="table" :headers="headers" :items-length="totalSongs" :items="songs" :loading="loading"
-    v-model:items-per-page="itemsPerPage" item-value="id">
-    <template v-slot:item="{ item }">
+    v-model:items-per-page="itemsPerPage" v-model:page="page" item-value="id">
+    <template v-slot:item="{ item, index }">
       <tr class="activeItem" @mouseenter="hoveredRow = item.id" @mouseleave="hoveredRow = null"
         @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': isItemPlaying(item) }">
-        <td style="width: 60px;" v-html="getPlayIcon(item)"></td>
+        <td style="width: 60px;" v-html="getPlayIcon(item, index)"></td>
         <td>
           <Song :song="item" />
         </td>
