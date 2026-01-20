@@ -9,6 +9,7 @@ A modern Spotify music library manager built with Nuxt 3, Vue 3, Pinia, and Type
 ### Sync & Backup
 - **Liked Songs Sync**: Automatically sync and backup your Spotify liked songs
 - **Playlist Sync**: Sync all your Spotify playlists with track details
+- **Real-Time Updates**: Live sync status notifications via Pusher WebSockets
 
 ### Import & Export
 - **Import from Playlists**: Import songs from any playlist (e.g., Shazam) to liked songs
@@ -24,10 +25,21 @@ A modern Spotify music library manager built with Nuxt 3, Vue 3, Pinia, and Type
 - **Auth Status Monitoring**: Warning banner when authorization expires
 - **One-Click Re-auth**: Easy re-authorization flow
 
+## Environment Variables
+
+```env
+# API Configuration
+API_BASE_URL=http://your-backend-url:8001
+
+# Pusher Configuration (for real-time updates)
+PUSHER_KEY=your_pusher_key
+```
+
 ## Tech Stack
 - Nuxt 3 / Vue 3
 - Pinia + TypeScript
 - Vuetify 3 + TailwindCSS
+- Pusher (WebSocket real-time updates)
 
 ## Related
 - [Synctify Backend](https://github.com/PanduruIonut/synctify-laravel)
