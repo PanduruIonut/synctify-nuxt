@@ -163,6 +163,8 @@ export const useSpotifyPlayer = () => {
     }
   }
 
+  const MAX_QUEUE_SIZE = 50 // Spotify API limit
+
   const playTrackFromQueue = async (index: number) => {
     if (!deviceId.value || !store.user.accessToken) {
       error.value = 'Player not ready'
@@ -175,6 +177,12 @@ export const useSpotifyPlayer = () => {
 
     currentIndex.value = index
 
+    // Get a window of tracks around current index to avoid 413 error
+    const start = Math.max(0, index - 25)
+    const end = Math.min(queue.value.length, index + 25)
+    const windowedQueue = queue.value.slice(start, end)
+    const offsetInWindow = index - start
+
     try {
       const response = await fetch(
         `https://api.spotify.com/v1/me/player/play?device_id=${deviceId.value}`,
@@ -185,15 +193,19 @@ export const useSpotifyPlayer = () => {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify({
-            uris: queue.value,
-            offset: { position: index }
+            uris: windowedQueue,
+            offset: { position: offsetInWindow }
           })
         }
       )
 
       if (!response.ok && response.status !== 204) {
-        const data = await response.json()
-        throw new Error(data.error?.message || 'Failed to play track')
+        const text = await response.text()
+        if (text) {
+          const data = JSON.parse(text)
+          throw new Error(data.error?.message || 'Failed to play track')
+        }
+        throw new Error('Failed to play track')
       }
 
       error.value = null
@@ -243,8 +255,12 @@ export const useSpotifyPlayer = () => {
       )
 
       if (!response.ok && response.status !== 204) {
-        const data = await response.json()
-        throw new Error(data.error?.message || 'Failed to play track')
+        const text = await response.text()
+        if (text) {
+          const data = JSON.parse(text)
+          throw new Error(data.error?.message || 'Failed to play track')
+        }
+        throw new Error('Failed to play track')
       }
 
       error.value = null
