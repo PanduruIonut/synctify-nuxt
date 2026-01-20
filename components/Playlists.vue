@@ -82,7 +82,7 @@ watch(() => store.user?.id, (newId) => {
   <div class="playlists-container">
     <div class="header">
       <h3 class="title">My Playlists</h3>
-      <v-btn
+      <v-btn variant="outlined"
         size="small"
         :loading="syncing"
         @click="syncPlaylists"
@@ -149,10 +149,16 @@ watch(() => store.user?.id, (newId) => {
 }
 
 .sync-btn {
-  background-color: #1DB954 !important;
-  color: black !important;
-  font-weight: 600;
+  background-color: #2a2a2a !important;
+  border: 1px solid #1DB954 !important;
+  color: #1DB954 !important;
+  font-weight: 500;
 }
+
+.sync-btn:hover {
+  background-color: #333 !important;
+}
+
 
 .loading,
 .error,

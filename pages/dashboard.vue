@@ -11,7 +11,20 @@
       <UserStatsSkeleton v-if="showUserStatsSkeleton" />
       <UserStats v-if="!showUserStatsSkeleton" @show-skeleton="displayUserSkeleton()" />
       <div class="sync-settings" v-if="!showUserStatsSkeleton">
-        <v-btn @click="sync" :disabled="authStatus === 'needs_reauth'">Sync Liked Songs</v-btn>
+        <v-btn @click="sync" :disabled="authStatus === 'needs_reauth'" variant="outlined" class="action-btn"><v-icon size="small">mdi-heart</v-icon> Sync</v-btn>
+        <v-menu>
+          <template v-slot:activator="{ props }">
+            <v-btn v-bind="props" variant="outlined" class="action-btn">Export</v-btn>
+          </template>
+          <v-list density="compact" class="export-menu">
+            <v-list-item @click="exportLikedSongs('json')" prepend-icon="mdi-code-json">
+              <v-list-item-title>JSON</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="exportLikedSongs('csv')" prepend-icon="mdi-file-delimited">
+              <v-list-item-title>CSV</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
       <Playlists v-if="!showUserStatsSkeleton" @selectPlaylist="handleSelectPlaylist" />
     </div>
@@ -107,7 +120,7 @@ const authStatus = ref('valid');
 const authorizeUrl = computed(() => {
   const clientId = store.user?.settings?.clientId || '';
   const redirectUri = encodeURIComponent(runtimeConfig.public.REDIRECT_URI || window.location.origin + '/callback');
-  const scopes = encodeURIComponent('user-library-read playlist-read-private');
+  const scopes = encodeURIComponent('user-library-read playlist-read-private playlist-modify-public playlist-modify-private user-top-read streaming user-read-playback-state user-modify-playback-state');
   return `https://accounts.spotify.com/authorize?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}`;
 });
 
@@ -230,6 +243,12 @@ async function importToLikedSongs() {
   } finally {
     importing.value = false;
   }
+}
+
+function exportLikedSongs(format: string) {
+  if (!store.user?.id) return;
+  const url = `${runtimeConfig.public.API_BASE_URL}/api/user/${store.user.id}/export-liked-songs?format=${format}`;
+  window.open(url, "_blank");
 }
 
 function backToLikedSongs() {
@@ -565,6 +584,9 @@ body {
 }
 
 .sync-settings {
+  display: flex;
+  gap: 10px;
+  padding: 15px;
   border-radius: 10px;
   margin-top: 17px;
   background-color: $nero;
@@ -572,5 +594,23 @@ body {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 90%, $nero);
   background: linear-gradient(to bottom, $nero 90%, rgba(0, 0, 0, 0));
   flex-shrink: 0;
+}
+
+.action-btn {
+  font-size: 13px;
+  background-color: #2a2a2a !important;
+  border: 1px solid #1DB954 !important;
+  color: #1DB954 !important;
+  font-weight: 500;
+  flex: 1;
+}
+
+.action-btn:hover {
+  background-color: #333 !important;
+}
+
+.export-menu {
+  background-color: #282828 !important;
+  background-color: #282828 !important;
 }
 </style>

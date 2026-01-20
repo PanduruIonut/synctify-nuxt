@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     },
   },
   plugins: ['~/plugins/laravel-echo.ts'],
-  css: ['vuetify/lib/styles/main.sass', '~/assets/css/main.scss'],
+  css: ['vuetify/lib/styles/main.sass', '@mdi/font/css/materialdesignicons.css', '~/assets/css/main.scss'],
   build: {
     transpile: ['vuetify'],
   },
