@@ -12,10 +12,8 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   window.Pusher = Pusher
   
-  // Use the same host as the current page, or fall back to config
-  const wsHost = typeof window !== 'undefined' 
-    ? window.location.hostname 
-    : 'localhost';
+  // Use DDNS hostname for WebSocket
+  const wsHost = config.public.WS_HOST || 'grid.home.ro';
   
   window.Echo = new Echo({
     broadcaster: 'pusher',
