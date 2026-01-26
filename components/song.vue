@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, onUpdated } from "vue";
+import { ref, onUpdated, computed } from "vue";
 import { Song } from "@/types/song";
 import { useSpotifyPlayer } from '@/composables/useSpotifyPlayer'
 
-const props = defineProps<{ song: Song }>();
+const props = defineProps<{ song: Song; noClick?: boolean }>();
 const modifiedSong = ref(getModifiedSong(props.song));
 const { playTrack, currentTrack, isPlaying } = useSpotifyPlayer()
 
@@ -26,13 +26,13 @@ function getModifiedSong(song: Song) {
 function getImageUrl() {
   const images = modifiedSong.value.images;
   if (Array.isArray(images) && images.length > 0) {
-    // Prefer smallest image (index 2), fallback to whatever is available
     return images[2]?.url || images[1]?.url || images[0]?.url || '';
   }
   return '';
 }
 
 function handlePlay() {
+  if (props.noClick) return;
   const uri = props.song.spotify_uri || `spotify:track:${props.song.id}`;
   playTrack(uri);
 }

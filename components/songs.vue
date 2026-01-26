@@ -134,7 +134,7 @@ const isItemPlaying = (item: any) => {
         @click="handleSongClick(item)" :class="{ 'selected-row': selectedRow === item.id, 'playing': isItemPlaying(item) }">
         <td style="width: 60px;" v-html="getPlayIcon(item, index)"></td>
         <td>
-          <Song :song="item" />
+          <Song :song="item" :noClick="true" />
         </td>
         <td class="text-truncate" :title="item.artists">{{ item.artists }}</td>
         <td class="text-truncate" :title="item.album">{{ item.album }}</td>
