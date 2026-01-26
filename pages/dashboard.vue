@@ -152,6 +152,9 @@ async function fetchAuthStatus() {
     if (response.ok) {
       const res = await response.json();
       authStatus.value = res.auth_status || 'valid';
+      if (res.access_token) {
+        store.saveUser({ accessToken: res.access_token });
+      }
     }
   } catch (error) {
     console.error('Failed to fetch auth status:', error);
