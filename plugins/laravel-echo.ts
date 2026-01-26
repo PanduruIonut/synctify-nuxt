@@ -12,15 +12,10 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   window.Pusher = Pusher
   
-  // Use same host as the page (works with SSH tunnel)
-  const wsHost = typeof window !== 'undefined' 
-    ? window.location.hostname 
-    : 'localhost';
-  
   window.Echo = new Echo({
     broadcaster: 'pusher',
     key: `${config.public.PUSHER_KEY}`,
-    wsHost: wsHost,
+    wsHost: 'grid.home.ro',
     wsPort: 6001,
     wssPort: 6001,
     forceTLS: false,
