@@ -12,8 +12,10 @@ export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
   window.Pusher = Pusher
   
-  // Use DDNS hostname for WebSocket
-  const wsHost = config.public.WS_HOST || 'grid.home.ro';
+  // Use same host as the page (works with SSH tunnel)
+  const wsHost = typeof window !== 'undefined' 
+    ? window.location.hostname 
+    : 'localhost';
   
   window.Echo = new Echo({
     broadcaster: 'pusher',
