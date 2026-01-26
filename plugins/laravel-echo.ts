@@ -1,32 +1,25 @@
 import Echo from 'laravel-echo'
-import Pusher from 'pusher-js'
+import { io } from 'socket.io-client'
 
 declare global {
   interface Window {
-    Pusher:any;
-    Echo:any;
+    io: any;
+    Echo: any;
   }
 }
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig();
-  window.Pusher = Pusher
+  window.io = io
   
   window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: `${config.public.PUSHER_KEY}`,
-    wsHost: 'grid.home.ro',
-    wsPort: 6001,
-    wssPort: 6001,
-    forceTLS: false,
-    disableStats: true,
-    enabledTransports: ['ws', 'wss'],
-    cluster: 'eu',
-    auth:{
+    broadcaster: 'socket.io',
+    host: 'http://grid.home.ro:6001',
+    auth: {
       headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer ',
+        Accept: 'application/json',
+        Authorization: 'Bearer ',
       },
-  },
+    },
   })
 })
